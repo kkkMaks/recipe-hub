@@ -1,8 +1,9 @@
 import 'core-js/stable'; // for polyfilling everything else
 import 'regenerator-runtime'; // for polyfilling async/await
 
-import { loadRecipe, state } from './model';
-import RecipeView from './views/recipeView';
+import { loadRecipe, loadSearchResults, state } from './model';
+import recipeView from './views/recipeView';
+import searchView from './views/searchView';
 
 export interface State {
   id?: string;
@@ -19,15 +20,12 @@ export interface State {
   sourceUrl?: string;
 }
 
-const recipeContainer = document.querySelector('.recipe') as HTMLDivElement;
-
 const controlRecipes = async function () {
   try {
     const id = window.location.hash.slice(1);
-    // const search = window.location.search;
 
     if (!id) return;
-    RecipeView.renderSpinner();
+    recipeView.renderSpinner();
 
     // 1) Loading data
     await loadRecipe(id);
@@ -36,13 +34,33 @@ const controlRecipes = async function () {
     if (!recipe) throw new Error('Id not found');
 
     // 2) Rendering data
-    RecipeView.render(recipe);
-  } catch (error) {
-    RecipeView.clear();
+    recipeView.render(recipe);
+  } catch (error: any) {
+    recipeView.clear();
+    recipeView.renderError(error);
     console.error(error);
   }
 };
 
-['hashchange', 'load'].forEach((event) => {
-  window.addEventListener(event, controlRecipes);
-});
+const controlSearchResults = async function () {
+  try {
+    // Get search query
+    const query = searchView.getQuery();
+    if (!query) return;
+    // Load data
+    await loadSearchResults(query);
+    console.log(state.search.result);
+
+    // render data
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// controlSearchResults();
+
+const init = function () {
+  recipeView.addHandlerRender(controlRecipes);
+  searchView.addHandlerSearch(controlSearchResults);
+};
+init();

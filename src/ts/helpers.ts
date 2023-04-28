@@ -13,17 +13,17 @@ interface FailResponse {
 }
 
 export interface Recipe {
-  cooking_time: number;
+  cooking_time?: number;
   id: string;
   image_url: string;
-  ingredients: {
+  ingredients?: {
     quantity: number;
     unit: string;
     description: string;
   }[];
   publisher: string;
-  servings: number;
-  source_url: string;
+  servings?: number;
+  source_url?: string;
   title: string;
 }
 
@@ -44,8 +44,6 @@ export async function getJson(url: string) {
       timeout(TIMEOUT_SEC),
     ])) as Response;
     const data: ApiResponse = await res.json();
-    console.log(`response status: ${res.ok}`);
-    console.log(`data status: ${data.status}`);
 
     if (!res.ok && data.status === 'fail') {
       const errorMessage = data.message || 'An error occurred';

@@ -597,12 +597,11 @@ require("31fbff4559b4c975"); // for polyfilling everything else
 require("ba6e9d06de779d55"); // for polyfilling async/await
 const model_1 = require("7439d74db8fa8990");
 const recipeView_1 = __importDefault(require("c18462d8301541d2"));
-const recipeContainer = document.querySelector(".recipe");
+const searchView_1 = __importDefault(require("b3107744d63c7c23"));
 const controlRecipes = function() {
     return __awaiter(this, void 0, void 0, function*() {
         try {
             const id = window.location.hash.slice(1);
-            // const search = window.location.search;
             if (!id) return;
             recipeView_1.default.renderSpinner();
             // 1) Loading data
@@ -613,18 +612,34 @@ const controlRecipes = function() {
             recipeView_1.default.render(recipe);
         } catch (error) {
             recipeView_1.default.clear();
+            recipeView_1.default.renderError(error);
             console.error(error);
         }
     });
 };
-[
-    "hashchange",
-    "load"
-].forEach((event)=>{
-    window.addEventListener(event, controlRecipes);
-});
+const controlSearchResults = function() {
+    return __awaiter(this, void 0, void 0, function*() {
+        try {
+            // Get search query
+            const query = searchView_1.default.getQuery();
+            if (!query) return;
+            // Load data
+            yield (0, model_1.loadSearchResults)(query);
+            console.log(model_1.state.search.result);
+        // render data
+        } catch (error) {
+            console.log(error);
+        }
+    });
+};
+// controlSearchResults();
+const init = function() {
+    recipeView_1.default.addHandlerRender(controlRecipes);
+    searchView_1.default.addHandlerSearch(controlSearchResults);
+};
+init();
 
-},{"31fbff4559b4c975":"7CRIE","ba6e9d06de779d55":"dXNgZ","7439d74db8fa8990":"Y4A21","c18462d8301541d2":"l60JC"}],"7CRIE":[function(require,module,exports) {
+},{"31fbff4559b4c975":"7CRIE","ba6e9d06de779d55":"dXNgZ","7439d74db8fa8990":"Y4A21","c18462d8301541d2":"l60JC","b3107744d63c7c23":"9OQAM"}],"7CRIE":[function(require,module,exports) {
 require("ca4c3b0d1be5b9c7");
 require("ddddaf1799cd05e0");
 require("c291de8cbf8a1f61");
@@ -16436,16 +16451,30 @@ var __awaiter = this && this.__awaiter || function(thisArg, _arguments, P, gener
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.loadRecipe = exports.state = void 0;
+exports.loadSearchResults = exports.loadRecipe = exports.state = void 0;
 const helpers_1 = require("111d130c2903409c");
 const config_1 = require("b3edc9e0a51f0f5");
+// import { Recipe } from './helpers';
+// interface searchResult {
+//   status: string;
+//   results: number;
+//   data: {
+//     data: {
+//       recipes: Recipe;
+//     };
+//   };
+// }
 exports.state = {
-    recipe: {}
+    recipe: {},
+    search: {
+        query: "",
+        result: []
+    }
 };
 const loadRecipe = function(id) {
     return __awaiter(this, void 0, void 0, function*() {
         try {
-            const data = yield (0, helpers_1.getJson)(`${config_1.API_URL}/${id}`);
+            const data = yield (0, helpers_1.getJson)(`${config_1.API_URL}${id}`);
             if (data.status === "success") {
                 const recipe = data.data.recipe;
                 exports.state.recipe = {
@@ -16461,12 +16490,32 @@ const loadRecipe = function(id) {
             }
         } catch (error) {
             exports.state.recipe = {};
-            console.error(`<Y ${error} `);
             throw error;
         }
     });
 };
 exports.loadRecipe = loadRecipe;
+const loadSearchResults = function(query) {
+    return __awaiter(this, void 0, void 0, function*() {
+        try {
+            exports.state.search.query = query;
+            const data = yield (0, helpers_1.getJson)(`${config_1.API_URL}?search=${query}`);
+            exports.state.search.result = data.data.recipes.map((rec)=>{
+                return {
+                    id: rec.id,
+                    title: rec.title,
+                    image: rec.image,
+                    publisher: rec.publisher
+                };
+            });
+        // data.data.recipe;
+        } catch (error) {
+            console.log(`My erorr ${error}`);
+            throw error;
+        }
+    });
+};
+exports.loadSearchResults = loadSearchResults;
 
 },{"b3edc9e0a51f0f5":"k5Hzs","111d130c2903409c":"hGI1E"}],"k5Hzs":[function(require,module,exports) {
 "use strict";
@@ -16474,7 +16523,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 exports.TIMEOUT_SEC = exports.API_KEY = exports.API_URL = void 0;
-exports.API_URL = `https://forkify-api.herokuapp.com/api/v2/recipes`;
+exports.API_URL = `https://forkify-api.herokuapp.com/api/v2/recipes/`;
 exports.API_KEY = "4eed75af-6ec0-42cd-ba0e-5c749b288760";
 exports.TIMEOUT_SEC = 10;
 
@@ -16528,8 +16577,6 @@ function getJson(url) {
                 (0, exports.timeout)(config_1.TIMEOUT_SEC)
             ]);
             const data = yield res.json();
-            console.log(`response status: ${res.ok}`);
-            console.log(`data status: ${data.status}`);
             if (!res.ok && data.status === "fail") {
                 const errorMessage = data.message || "An error occurred";
                 throw new Error(`${errorMessage} status: ${res.status}`);
@@ -16558,17 +16605,63 @@ class RecipeView {
     constructor(){
         this.parentElement = document.querySelector(".recipe");
         this.data = {};
-        this.renderSpinner = function() {
-            const markup = `
+        this.errorMessage = "We could not find that recipe. Please try again!";
+        this.defaultMessage = "Start by searching for a recipe or an ingredient. Have fun!";
+    }
+    renderSpinner() {
+        const markup = `
     <div class="spinner">
       <svg>
         <use href="${icons_svg_1.default}#icon-loader"></use>
       </svg>
     </div>
     `;
-            this.parentElement.innerHTML = "";
-            this.parentElement.insertAdjacentHTML("afterbegin", markup);
-        };
+        this.clear();
+        this.parentElement.insertAdjacentHTML("afterbegin", markup);
+    }
+    renderError(messageError, message = this.errorMessage) {
+        let markup;
+        if (messageError.message.includes("Invalid _id")) markup = `
+        <div class="error">
+          <div>
+            <svg>
+              <use href="${icons_svg_1.default}#icon-alert-triangle"></use>
+            </svg>
+          </div>
+          <p>${message}</p>
+        </div>`;
+        else markup = `
+      <div class="error">
+          <div>
+            <svg>
+              <use href="${icons_svg_1.default}#icon-alert-triangle"></use>
+            </svg>
+          </div>
+          <p>${message}. Please try again!</p>
+      </div>`;
+        this.clear();
+        this.parentElement.insertAdjacentHTML("beforeend", markup);
+    }
+    renderMessage(message = this.defaultMessage) {
+        const markup = `
+    <div class="message">
+      <div>
+        <svg>
+          <use href="${icons_svg_1.default}#icon-smile"></use>
+        </svg>
+      </div>
+      <p>${message}</p>
+    </div>`;
+        this.clear();
+        this.parentElement.insertAdjacentHTML("beforeend", markup);
+    }
+    addHandlerRender(handler) {
+        [
+            "hashchange",
+            "load"
+        ].forEach((event)=>{
+            window.addEventListener(event, handler);
+        });
     }
     render(data) {
         this.data = data;
@@ -16965,6 +17058,33 @@ Fraction.primeFactors = function(n) {
     return factors; // Return the prime factors
 };
 module.exports.Fraction = Fraction;
+
+},{}],"9OQAM":[function(require,module,exports) {
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+class SearchView {
+    constructor(){
+        this.parentElement = document.querySelector(".search");
+    }
+    getQuery() {
+        var _a;
+        return (_a = this.parentElement) === null || _a === void 0 ? void 0 : _a.querySelector(".search__field").value;
+    }
+    clearInput() {
+        var _a;
+        (_a = this.parentElement) === null || _a === void 0 || (_a.querySelector(".search__field").value = "");
+    }
+    addHandlerSearch(handler) {
+        this.parentElement.addEventListener("submit", (e)=>{
+            e.preventDefault();
+            handler();
+            this.clearInput();
+        });
+    }
+}
+exports.default = new SearchView();
 
 },{}]},["d8XZh","aenu9"], "aenu9", "parcelRequirea6cc")
 

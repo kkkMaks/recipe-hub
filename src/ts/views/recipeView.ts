@@ -12,8 +12,11 @@ interface Ingredients {
 class RecipeView {
   private parentElement = document.querySelector('.recipe') as HTMLDivElement;
   private data: State = {};
+  private errorMessage = 'We could not find that recipe. Please try again!';
+  private defaultMessage =
+    'Start by searching for a recipe or an ingredient. Have fun!';
 
-  public renderSpinner = function () {
+  public renderSpinner() {
     const markup = `
     <div class="spinner">
       <svg>
@@ -22,9 +25,56 @@ class RecipeView {
     </div>
     `;
 
-    this.parentElement.innerHTML = '';
+    this.clear();
     this.parentElement.insertAdjacentHTML('afterbegin', markup);
-  };
+  }
+
+  public renderError(messageError: Error, message = this.errorMessage) {
+    let markup;
+    if (messageError.message.includes('Invalid _id')) {
+      markup = `
+        <div class="error">
+          <div>
+            <svg>
+              <use href="${icons}#icon-alert-triangle"></use>
+            </svg>
+          </div>
+          <p>${message}</p>
+        </div>`;
+    } else {
+      markup = `
+      <div class="error">
+          <div>
+            <svg>
+              <use href="${icons}#icon-alert-triangle"></use>
+            </svg>
+          </div>
+          <p>${message}. Please try again!</p>
+      </div>`;
+    }
+    this.clear();
+    this.parentElement.insertAdjacentHTML('beforeend', markup);
+  }
+
+  public renderMessage(message: string = this.defaultMessage) {
+    const markup = `
+    <div class="message">
+      <div>
+        <svg>
+          <use href="${icons}#icon-smile"></use>
+        </svg>
+      </div>
+      <p>${message}</p>
+    </div>`;
+    this.clear();
+    this.parentElement.insertAdjacentHTML('beforeend', markup);
+  }
+
+  public addHandlerRender(handler: VoidFunction) {
+    ['hashchange', 'load'].forEach((event) => {
+      window.addEventListener(event, handler);
+    });
+  }
 
   public render(data: State) {
     this.data = data;

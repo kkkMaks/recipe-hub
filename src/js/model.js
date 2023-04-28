@@ -9,16 +9,30 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loadRecipe = exports.state = void 0;
+exports.loadSearchResults = exports.loadRecipe = exports.state = void 0;
 const helpers_1 = require("./helpers");
 const config_1 = require("./config");
+// import { Recipe } from './helpers';
+// interface searchResult {
+//   status: string;
+//   results: number;
+//   data: {
+//     data: {
+//       recipes: Recipe;
+//     };
+//   };
+// }
 exports.state = {
     recipe: {},
+    search: {
+        query: '',
+        result: [],
+    },
 };
 const loadRecipe = function (id) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const data = yield (0, helpers_1.getJson)(`${config_1.API_URL}/${id}`);
+            const data = yield (0, helpers_1.getJson)(`${config_1.API_URL}${id}`);
             if (data.status === 'success') {
                 const recipe = data.data.recipe;
                 exports.state.recipe = {
@@ -35,9 +49,31 @@ const loadRecipe = function (id) {
         }
         catch (error) {
             exports.state.recipe = {};
-            console.error(`<Y ${error} `);
             throw error;
         }
     });
 };
 exports.loadRecipe = loadRecipe;
+const loadSearchResults = function (query) {
+    return __awaiter(this, void 0, void 0, function* () {
+        `https://forkify-api.herokuapp.com/api/v2/recipes?search=pizza`;
+        try {
+            exports.state.search.query = query;
+            const data = yield (0, helpers_1.getJson)(`${config_1.API_URL}?search=${query}`);
+            exports.state.search.result = data.data.recipes.map((rec) => {
+                return {
+                    id: rec.id,
+                    title: rec.title,
+                    image: rec.image,
+                    publisher: rec.publisher,
+                };
+            });
+            // data.data.recipe;
+        }
+        catch (error) {
+            console.log(`My erorr ${error}`);
+            throw error;
+        }
+    });
+};
+exports.loadSearchResults = loadSearchResults;

@@ -27,8 +27,6 @@ function getJson(url) {
                 (0, exports.timeout)(config_1.TIMEOUT_SEC),
             ]));
             const data = yield res.json();
-            console.log(`response status: ${res.ok}`);
-            console.log(`data status: ${data.status}`);
             if (!res.ok && data.status === 'fail') {
                 const errorMessage = data.message || 'An error occurred';
                 throw new Error(`${errorMessage} status: ${res.status}`);

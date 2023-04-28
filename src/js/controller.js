@@ -16,12 +16,11 @@ require("core-js/stable"); // for polyfilling everything else
 require("regenerator-runtime"); // for polyfilling async/await
 const model_1 = require("./model");
 const recipeView_1 = __importDefault(require("./views/recipeView"));
-const recipeContainer = document.querySelector('.recipe');
+const searchView_1 = __importDefault(require("./views/searchView"));
 const controlRecipes = function () {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const id = window.location.hash.slice(1);
-            // const search = window.location.search;
             if (!id)
                 return;
             recipeView_1.default.renderSpinner();
@@ -35,10 +34,31 @@ const controlRecipes = function () {
         }
         catch (error) {
             recipeView_1.default.clear();
+            recipeView_1.default.renderError(error);
             console.error(error);
         }
     });
 };
-['hashchange', 'load'].forEach((event) => {
-    window.addEventListener(event, controlRecipes);
-});
+const controlSearchResults = function () {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            // Get search query
+            const query = searchView_1.default.getQuery();
+            if (!query)
+                return;
+            // Load data
+            yield (0, model_1.loadSearchResults)(query);
+            console.log(model_1.state.search.result);
+            // render data
+        }
+        catch (error) {
+            console.log(error);
+        }
+    });
+};
+// controlSearchResults();
+const init = function () {
+    recipeView_1.default.addHandlerRender(controlRecipes);
+    searchView_1.default.addHandlerSearch(controlSearchResults);
+};
+init();

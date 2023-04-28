@@ -9,17 +9,64 @@ class RecipeView {
     constructor() {
         this.parentElement = document.querySelector('.recipe');
         this.data = {};
-        this.renderSpinner = function () {
-            const markup = `
+        this.errorMessage = 'We could not find that recipe. Please try again!';
+        this.defaultMessage = 'Start by searching for a recipe or an ingredient. Have fun!';
+    }
+    renderSpinner() {
+        const markup = `
     <div class="spinner">
       <svg>
         <use href="${icons_svg_1.default}#icon-loader"></use>
       </svg>
     </div>
     `;
-            this.parentElement.innerHTML = '';
-            this.parentElement.insertAdjacentHTML('afterbegin', markup);
-        };
+        this.clear();
+        this.parentElement.insertAdjacentHTML('afterbegin', markup);
+    }
+    renderError(messageError, message = this.errorMessage) {
+        let markup;
+        if (messageError.message.includes('Invalid _id')) {
+            markup = `
+        <div class="error">
+          <div>
+            <svg>
+              <use href="${icons_svg_1.default}#icon-alert-triangle"></use>
+            </svg>
+          </div>
+          <p>${message}</p>
+        </div>`;
+        }
+        else {
+            markup = `
+      <div class="error">
+          <div>
+            <svg>
+              <use href="${icons_svg_1.default}#icon-alert-triangle"></use>
+            </svg>
+          </div>
+          <p>${message}. Please try again!</p>
+      </div>`;
+        }
+        this.clear();
+        this.parentElement.insertAdjacentHTML('beforeend', markup);
+    }
+    renderMessage(message = this.defaultMessage) {
+        const markup = `
+    <div class="message">
+      <div>
+        <svg>
+          <use href="${icons_svg_1.default}#icon-smile"></use>
+        </svg>
+      </div>
+      <p>${message}</p>
+    </div>`;
+        this.clear();
+        this.parentElement.insertAdjacentHTML('beforeend', markup);
+    }
+    addHandlerRender(handler) {
+        ['hashchange', 'load'].forEach((event) => {
+            window.addEventListener(event, handler);
+        });
     }
     render(data) {
         this.data = data;
