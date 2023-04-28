@@ -8,48 +8,37 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-const recipeContainer = document.querySelector('.recipe');
-const timeout = function (s) {
-    return new Promise((_, reject) => {
-        setTimeout(() => {
-            reject(new Error(`Request took too long! Timeout after ${s} second`));
-        }, s * 1000);
-    });
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-// https://forkify-api.herokuapp.com/v2
-const API_KEY = '4eed75af-6ec0-42cd-ba0e-5c749b288760';
-console.log('Test');
-function getRecipes() {
+Object.defineProperty(exports, "__esModule", { value: true });
+require("core-js/stable"); // for polyfilling everything else
+require("regenerator-runtime"); // for polyfilling async/await
+const model_1 = require("./model");
+const recipeView_1 = __importDefault(require("./views/recipeView"));
+const recipeContainer = document.querySelector('.recipe');
+const controlRecipes = function () {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const res = yield fetch(`https://forkify-api.herokuapp.com/api/v2/recipes/5ed6604591c37cdc054bc886`);
-            const data = yield res.json();
-            console.log(res);
-            console.log(data);
-            if (!res.ok && data.status === 'fail') {
-                const errorMessage = data.message || 'An error occurred';
-                throw new Error(`${errorMessage} status: ${res.status}`);
-            }
-            let recipe;
-            if (data.status === 'success') {
-                recipe = data.data.recipe;
-                recipe = {
-                    id: recipe.id,
-                    image: recipe.image_url,
-                    title: recipe.title,
-                    cookingTime: recipe.cooking_time,
-                    ingredients: recipe.ingredients,
-                    publisher: recipe.publisher,
-                    servings: recipe.servings,
-                    sourceUrl: recipe.source_url,
-                };
-            }
-            console.log(recipe);
-            return recipe;
+            const id = window.location.hash.slice(1);
+            // const search = window.location.search;
+            if (!id)
+                return;
+            recipeView_1.default.renderSpinner();
+            // 1) Loading data
+            yield (0, model_1.loadRecipe)(id);
+            const recipe = model_1.state.recipe; //return {}
+            if (!recipe)
+                throw new Error('Id not found');
+            // 2) Rendering data
+            recipeView_1.default.render(recipe);
         }
         catch (error) {
+            recipeView_1.default.clear();
             console.error(error);
         }
     });
-}
-getRecipes();
+};
+['hashchange', 'load'].forEach((event) => {
+    window.addEventListener(event, controlRecipes);
+});
