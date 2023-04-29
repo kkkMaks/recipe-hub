@@ -1,7 +1,8 @@
 import { Fraction } from 'fractional';
-
 import { State } from '../controller';
 import icons from 'url:../../img/icons.svg';
+
+import View from './View';
 
 interface Ingredients {
   quantity: number;
@@ -9,82 +10,12 @@ interface Ingredients {
   description: string;
 }
 
-class RecipeView {
-  private parentElement = document.querySelector('.recipe') as HTMLDivElement;
-  private data: State = {};
-  private errorMessage = 'We could not find that recipe. Please try again!';
-  private defaultMessage =
-    'Start by searching for a recipe or an ingredient. Have fun!';
-
-  public renderSpinner() {
-    const markup = `
-    <div class="spinner">
-      <svg>
-        <use href="${icons}#icon-loader"></use>
-      </svg>
-    </div>
-    `;
-
-    this.clear();
-    this.parentElement.insertAdjacentHTML('afterbegin', markup);
-  }
-
-  public renderError(messageError: Error, message = this.errorMessage) {
-    let markup;
-    if (messageError.message.includes('Invalid _id')) {
-      markup = `
-        <div class="error">
-          <div>
-            <svg>
-              <use href="${icons}#icon-alert-triangle"></use>
-            </svg>
-          </div>
-          <p>${message}</p>
-        </div>`;
-    } else {
-      markup = `
-      <div class="error">
-          <div>
-            <svg>
-              <use href="${icons}#icon-alert-triangle"></use>
-            </svg>
-          </div>
-          <p>${message}. Please try again!</p>
-      </div>`;
-    }
-    this.clear();
-    this.parentElement.insertAdjacentHTML('beforeend', markup);
-  }
-
-  public renderMessage(message: string = this.defaultMessage) {
-    const markup = `
-    <div class="message">
-      <div>
-        <svg>
-          <use href="${icons}#icon-smile"></use>
-        </svg>
-      </div>
-      <p>${message}</p>
-    </div>`;
-    this.clear();
-    this.parentElement.insertAdjacentHTML('beforeend', markup);
-  }
-
+class RecipeView extends View {
+  public parentElement = document.querySelector('.recipe') as HTMLDivElement;
   public addHandlerRender(handler: VoidFunction) {
     ['hashchange', 'load'].forEach((event) => {
       window.addEventListener(event, handler);
     });
-  }
-
-  public render(data: State) {
-    this.data = data;
-    const markup = this.generateMarkup();
-    this.clear();
-    this.parentElement.insertAdjacentHTML('beforeend', markup);
-  }
-
-  public clear() {
-    this.parentElement.innerHTML = '';
   }
 
   private generateMarkupIngredients(ingredient: Ingredients) {
@@ -104,12 +35,15 @@ class RecipeView {
     `;
   }
 
-  private generateMarkup() {
+  public generateMarkup() {
+    const recipeInfo: State = this.data;
+    console.log(recipeInfo);
+
     return `
         <figure class="recipe__fig">
-          <img src="${this.data.image}" alt="Tomato" class="recipe__img" />
+          <img src="${recipeInfo.image}" alt="Tomato" class="recipe__img" />
           <h1 class="recipe__title">
-            <span>${this.data?.title}</span>
+            <span>${recipeInfo.title}</span>
           </h1>
         </figure>
 
@@ -119,7 +53,7 @@ class RecipeView {
               <use href="${icons}#icon-clock"></use>
             </svg>
             <span class="recipe__info-data recipe__info-data--minutes">${
-              this.data?.cookingTime
+              recipeInfo.cookingTime
             }</span>
             <span class="recipe__info-text">minutes</span>
           </div>
@@ -128,7 +62,7 @@ class RecipeView {
               <use href="${icons}#icon-users"></use>
             </svg>
             <span class="recipe__info-data recipe__info-data--people">${
-              this.data?.servings
+              recipeInfo.servings
             }</span>
             <span class="recipe__info-text">servings</span>
 
@@ -147,9 +81,7 @@ class RecipeView {
           </div>
 
           <div class="recipe__user-generated">
-            <svg>
-              <use href="${icons}#icon-user"></use>
-            </svg>
+            
           </div>
           <button class="btn--round">
             <svg class="">
@@ -163,8 +95,8 @@ class RecipeView {
           <ul class="recipe__ingredient-list">
           
             ${
-              this.data?.ingredients
-                ? this.data.ingredients
+              recipeInfo.ingredients
+                ? recipeInfo.ingredients
                     .map(this.generateMarkupIngredients)
                     .join(' ')
                 : ''
@@ -178,13 +110,13 @@ class RecipeView {
           <p class="recipe__directions-text">
             This recipe was carefully designed and tested by
             <span class="recipe__publisher">${
-              this.data?.publisher
+              recipeInfo.publisher
             }</span>. Please check out
             directions at their website.
           </p>
           <a
             class="btn--small recipe__btn"
-            href="${this.data?.sourceUrl}"
+            href="${recipeInfo.sourceUrl}"
             target="_blank"
           >
             <span>Directions</span>

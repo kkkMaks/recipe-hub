@@ -64,7 +64,7 @@ const loadSearchResults = function (query) {
                 return {
                     id: rec.id,
                     title: rec.title,
-                    image: rec.image,
+                    image: rec.image_url,
                     publisher: rec.publisher,
                 };
             });

@@ -5,77 +5,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const fractional_1 = require("fractional");
 const icons_svg_1 = __importDefault(require("url:../../img/icons.svg"));
-class RecipeView {
+const View_1 = __importDefault(require("./View"));
+class RecipeView extends View_1.default {
     constructor() {
+        super(...arguments);
         this.parentElement = document.querySelector('.recipe');
-        this.data = {};
-        this.errorMessage = 'We could not find that recipe. Please try again!';
-        this.defaultMessage = 'Start by searching for a recipe or an ingredient. Have fun!';
-    }
-    renderSpinner() {
-        const markup = `
-    <div class="spinner">
-      <svg>
-        <use href="${icons_svg_1.default}#icon-loader"></use>
-      </svg>
-    </div>
-    `;
-        this.clear();
-        this.parentElement.insertAdjacentHTML('afterbegin', markup);
-    }
-    renderError(messageError, message = this.errorMessage) {
-        let markup;
-        if (messageError.message.includes('Invalid _id')) {
-            markup = `
-        <div class="error">
-          <div>
-            <svg>
-              <use href="${icons_svg_1.default}#icon-alert-triangle"></use>
-            </svg>
-          </div>
-          <p>${message}</p>
-        </div>`;
-        }
-        else {
-            markup = `
-      <div class="error">
-          <div>
-            <svg>
-              <use href="${icons_svg_1.default}#icon-alert-triangle"></use>
-            </svg>
-          </div>
-          <p>${message}. Please try again!</p>
-      </div>`;
-        }
-        this.clear();
-        this.parentElement.insertAdjacentHTML('beforeend', markup);
-    }
-    renderMessage(message = this.defaultMessage) {
-        const markup = `
-    <div class="message">
-      <div>
-        <svg>
-          <use href="${icons_svg_1.default}#icon-smile"></use>
-        </svg>
-      </div>
-      <p>${message}</p>
-    </div>`;
-        this.clear();
-        this.parentElement.insertAdjacentHTML('beforeend', markup);
     }
     addHandlerRender(handler) {
         ['hashchange', 'load'].forEach((event) => {
             window.addEventListener(event, handler);
         });
-    }
-    render(data) {
-        this.data = data;
-        const markup = this.generateMarkup();
-        this.clear();
-        this.parentElement.insertAdjacentHTML('beforeend', markup);
-    }
-    clear() {
-        this.parentElement.innerHTML = '';
     }
     generateMarkupIngredients(ingredient) {
         return `
@@ -92,12 +31,13 @@ class RecipeView {
     `;
     }
     generateMarkup() {
-        var _a, _b, _c, _d, _e, _f;
+        const recipeInfo = this.data;
+        console.log(recipeInfo);
         return `
         <figure class="recipe__fig">
-          <img src="${this.data.image}" alt="Tomato" class="recipe__img" />
+          <img src="${recipeInfo.image}" alt="Tomato" class="recipe__img" />
           <h1 class="recipe__title">
-            <span>${(_a = this.data) === null || _a === void 0 ? void 0 : _a.title}</span>
+            <span>${recipeInfo.title}</span>
           </h1>
         </figure>
 
@@ -106,14 +46,14 @@ class RecipeView {
             <svg class="recipe__info-icon">
               <use href="${icons_svg_1.default}#icon-clock"></use>
             </svg>
-            <span class="recipe__info-data recipe__info-data--minutes">${(_b = this.data) === null || _b === void 0 ? void 0 : _b.cookingTime}</span>
+            <span class="recipe__info-data recipe__info-data--minutes">${recipeInfo.cookingTime}</span>
             <span class="recipe__info-text">minutes</span>
           </div>
           <div class="recipe__info">
             <svg class="recipe__info-icon">
               <use href="${icons_svg_1.default}#icon-users"></use>
             </svg>
-            <span class="recipe__info-data recipe__info-data--people">${(_c = this.data) === null || _c === void 0 ? void 0 : _c.servings}</span>
+            <span class="recipe__info-data recipe__info-data--people">${recipeInfo.servings}</span>
             <span class="recipe__info-text">servings</span>
 
             <div class="recipe__info-buttons">
@@ -131,9 +71,7 @@ class RecipeView {
           </div>
 
           <div class="recipe__user-generated">
-            <svg>
-              <use href="${icons_svg_1.default}#icon-user"></use>
-            </svg>
+            
           </div>
           <button class="btn--round">
             <svg class="">
@@ -146,8 +84,8 @@ class RecipeView {
           <h2 class="heading--2">Recipe ingredients</h2>
           <ul class="recipe__ingredient-list">
           
-            ${((_d = this.data) === null || _d === void 0 ? void 0 : _d.ingredients)
-            ? this.data.ingredients
+            ${recipeInfo.ingredients
+            ? recipeInfo.ingredients
                 .map(this.generateMarkupIngredients)
                 .join(' ')
             : ''}
@@ -159,12 +97,12 @@ class RecipeView {
           <h2 class="heading--2">How to cook it</h2>
           <p class="recipe__directions-text">
             This recipe was carefully designed and tested by
-            <span class="recipe__publisher">${(_e = this.data) === null || _e === void 0 ? void 0 : _e.publisher}</span>. Please check out
+            <span class="recipe__publisher">${recipeInfo.publisher}</span>. Please check out
             directions at their website.
           </p>
           <a
             class="btn--small recipe__btn"
-            href="${(_f = this.data) === null || _f === void 0 ? void 0 : _f.sourceUrl}"
+            href="${recipeInfo.sourceUrl}"
             target="_blank"
           >
             <span>Directions</span>

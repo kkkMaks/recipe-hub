@@ -4,6 +4,7 @@ import 'regenerator-runtime'; // for polyfilling async/await
 import { loadRecipe, loadSearchResults, state } from './model';
 import recipeView from './views/recipeView';
 import searchView from './views/searchView';
+import resultView from './views/resultView';
 
 export interface State {
   id?: string;
@@ -44,20 +45,20 @@ const controlRecipes = async function () {
 
 const controlSearchResults = async function () {
   try {
-    // Get search query
     const query = searchView.getQuery();
     if (!query) return;
-    // Load data
+
+    resultView.renderSpinner();
     await loadSearchResults(query);
-    console.log(state.search.result);
+    const data = state.search.result;
 
     // render data
+    resultView.render(data);
   } catch (error) {
-    console.log(error);
+    resultView.clear();
+    resultView.renderError(error as string);
   }
 };
-
-// controlSearchResults();
 
 const init = function () {
   recipeView.addHandlerRender(controlRecipes);

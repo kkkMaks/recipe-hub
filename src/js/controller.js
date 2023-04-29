@@ -17,6 +17,7 @@ require("regenerator-runtime"); // for polyfilling async/await
 const model_1 = require("./model");
 const recipeView_1 = __importDefault(require("./views/recipeView"));
 const searchView_1 = __importDefault(require("./views/searchView"));
+const resultView_1 = __importDefault(require("./views/resultView"));
 const controlRecipes = function () {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -42,21 +43,21 @@ const controlRecipes = function () {
 const controlSearchResults = function () {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            // Get search query
             const query = searchView_1.default.getQuery();
             if (!query)
                 return;
-            // Load data
+            resultView_1.default.renderSpinner();
             yield (0, model_1.loadSearchResults)(query);
-            console.log(model_1.state.search.result);
+            const data = model_1.state.search.result;
             // render data
+            resultView_1.default.render(data);
         }
         catch (error) {
-            console.log(error);
+            resultView_1.default.clear();
+            resultView_1.default.renderError(error);
         }
     });
 };
-// controlSearchResults();
 const init = function () {
     recipeView_1.default.addHandlerRender(controlRecipes);
     searchView_1.default.addHandlerSearch(controlSearchResults);
