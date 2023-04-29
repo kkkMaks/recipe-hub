@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const fractional_1 = require("fractional");
+const fracty_1 = __importDefault(require("fracty"));
 const icons_svg_1 = __importDefault(require("url:../../img/icons.svg"));
 const View_1 = __importDefault(require("./View"));
 class RecipeView extends View_1.default {
@@ -22,7 +22,7 @@ class RecipeView extends View_1.default {
       <svg class="recipe__icon">
         <use href="${icons_svg_1.default}#icon-check"></use>
       </svg>
-      <div class="recipe__quantity">${ingredient.quantity ? new fractional_1.Fraction(ingredient === null || ingredient === void 0 ? void 0 : ingredient.quantity).toString() : ''}</div>
+      <div class="recipe__quantity">${ingredient.quantity ? (0, fracty_1.default)(ingredient === null || ingredient === void 0 ? void 0 : ingredient.quantity).toString() : ''}</div>
       <div class="recipe__description">
         <span class="recipe__unit">${ingredient.unit}</span>
         ${ingredient.description}
