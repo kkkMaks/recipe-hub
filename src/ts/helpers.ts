@@ -1,33 +1,5 @@
 import { TIMEOUT_SEC } from './config';
-
-interface SuccessResponse {
-  status: 'success';
-  data: {
-    recipe: Recipe;
-  };
-}
-
-interface FailResponse {
-  status: 'fail';
-  message: string;
-}
-
-export interface Recipe {
-  cooking_time?: number;
-  id: string;
-  image_url: string;
-  ingredients?: {
-    quantity: number;
-    unit: string;
-    description: string;
-  }[];
-  publisher: string;
-  servings?: number;
-  source_url?: string;
-  title: string;
-}
-
-type ApiResponse = FailResponse | SuccessResponse;
+import { ApiResponse, Recipe, SuccessResponse } from './interfaces/interfases';
 
 export const timeout = function (s: number) {
   return new Promise((_, reject) => {

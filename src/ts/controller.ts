@@ -1,25 +1,17 @@
 import 'core-js/stable'; // for polyfilling everything else
 import 'regenerator-runtime'; // for polyfilling async/await
 
-import { loadRecipe, loadSearchResults, state } from './model';
+import {
+  loadRecipe,
+  loadSearchResults,
+  getSearchResultsPage,
+  state,
+} from './model';
+import { Recipe } from './interfaces/interfases';
 import recipeView from './views/recipeView';
 import searchView from './views/searchView';
 import resultView from './views/resultView';
-
-export interface State {
-  id?: string;
-  image?: string;
-  title?: string;
-  cookingTime?: number;
-  ingredients?: {
-    quantity: number;
-    unit: string;
-    description: string;
-  }[];
-  publisher?: string;
-  servings?: number;
-  sourceUrl?: string;
-}
+import paginationView from './views/paginationView';
 
 const controlRecipes = async function () {
   try {
@@ -30,7 +22,8 @@ const controlRecipes = async function () {
 
     // 1) Loading data
     await loadRecipe(id);
-    const recipe: State = state.recipe; //return {}
+
+    const recipe = state.recipe as Recipe;
 
     if (!recipe) throw new Error('Id not found');
 
@@ -45,23 +38,40 @@ const controlRecipes = async function () {
 
 const controlSearchResults = async function () {
   try {
+    console.log(1);
+
+    // Get search query
     const query = searchView.getQuery();
     if (!query) return;
 
+    // Load search results
     resultView.renderSpinner();
     await loadSearchResults(query);
-    const data = state.search.result;
+    const currPage = state.search.page;
 
-    // render data
-    resultView.render(data);
+    // Render results
+
+    resultView.render(getSearchResultsPage(currPage));
+
+    // Render pagination buttons
+    console.log(state.search);
+    paginationView.render(state.search);
   } catch (error) {
     resultView.clear();
     resultView.renderError(error as string);
   }
 };
 
+const controlPagination = function (goToPage: number) {
+  // Render NEW results
+  resultView.render(getSearchResultsPage(goToPage));
+  // Render pagination buttons
+  paginationView.render(state.search);
+};
+
 const init = function () {
   recipeView.addHandlerRender(controlRecipes);
   searchView.addHandlerSearch(controlSearchResults);
+  paginationView.addHandlerClick(controlPagination);
 };
 init();

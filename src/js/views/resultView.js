@@ -10,7 +10,8 @@ class ResultsView extends View_1.default {
         this.parentElement = document.querySelector('.results');
     }
     generateMarkup() {
-        return this.data
+        const recipes = this.data;
+        return recipes
             .map((recipe) => {
             const markup = `
       <li class="preview">

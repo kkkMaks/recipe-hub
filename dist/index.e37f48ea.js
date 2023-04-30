@@ -599,6 +599,7 @@ const model_1 = require("7439d74db8fa8990");
 const recipeView_1 = __importDefault(require("c18462d8301541d2"));
 const searchView_1 = __importDefault(require("b3107744d63c7c23"));
 const resultView_1 = __importDefault(require("19d111d1d31e7dc4"));
+const paginationView_1 = __importDefault(require("aa24829ad552d1c4"));
 const controlRecipes = function() {
     return __awaiter(this, void 0, void 0, function*() {
         try {
@@ -607,7 +608,7 @@ const controlRecipes = function() {
             recipeView_1.default.renderSpinner();
             // 1) Loading data
             yield (0, model_1.loadRecipe)(id);
-            const recipe = model_1.state.recipe; //return {}
+            const recipe = model_1.state.recipe;
             if (!recipe) throw new Error("Id not found");
             // 2) Rendering data
             recipeView_1.default.render(recipe);
@@ -621,26 +622,39 @@ const controlRecipes = function() {
 const controlSearchResults = function() {
     return __awaiter(this, void 0, void 0, function*() {
         try {
+            console.log(1);
+            // Get search query
             const query = searchView_1.default.getQuery();
             if (!query) return;
+            // Load search results
             resultView_1.default.renderSpinner();
             yield (0, model_1.loadSearchResults)(query);
-            const data = model_1.state.search.result;
-            // render data
-            resultView_1.default.render(data);
+            const currPage = model_1.state.search.page;
+            // Render results
+            resultView_1.default.render((0, model_1.getSearchResultsPage)(currPage));
+            // Render pagination buttons
+            console.log(model_1.state.search);
+            paginationView_1.default.render(model_1.state.search);
         } catch (error) {
             resultView_1.default.clear();
             resultView_1.default.renderError(error);
         }
     });
 };
+const controlPagination = function(goToPage) {
+    // Render NEW results
+    resultView_1.default.render((0, model_1.getSearchResultsPage)(goToPage));
+    // Render pagination buttons
+    paginationView_1.default.render(model_1.state.search);
+};
 const init = function() {
     recipeView_1.default.addHandlerRender(controlRecipes);
     searchView_1.default.addHandlerSearch(controlSearchResults);
+    paginationView_1.default.addHandlerClick(controlPagination);
 };
 init();
 
-},{"31fbff4559b4c975":"7CRIE","ba6e9d06de779d55":"dXNgZ","7439d74db8fa8990":"Y4A21","c18462d8301541d2":"l60JC","b3107744d63c7c23":"9OQAM","19d111d1d31e7dc4":"f70O5"}],"7CRIE":[function(require,module,exports) {
+},{"31fbff4559b4c975":"7CRIE","ba6e9d06de779d55":"dXNgZ","7439d74db8fa8990":"Y4A21","c18462d8301541d2":"l60JC","b3107744d63c7c23":"9OQAM","19d111d1d31e7dc4":"f70O5","aa24829ad552d1c4":"6z7bi"}],"7CRIE":[function(require,module,exports) {
 require("ca4c3b0d1be5b9c7");
 require("ddddaf1799cd05e0");
 require("c291de8cbf8a1f61");
@@ -16452,31 +16466,23 @@ var __awaiter = this && this.__awaiter || function(thisArg, _arguments, P, gener
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.loadSearchResults = exports.loadRecipe = exports.state = void 0;
+exports.getSearchResultsPage = exports.loadSearchResults = exports.loadRecipe = exports.state = void 0;
 const helpers_1 = require("111d130c2903409c");
 const config_1 = require("b3edc9e0a51f0f5");
-// import { Recipe } from './helpers';
-// interface searchResult {
-//   status: string;
-//   results: number;
-//   data: {
-//     data: {
-//       recipes: Recipe;
-//     };
-//   };
-// }
 exports.state = {
     recipe: {},
     search: {
         query: "",
-        result: []
+        result: [],
+        resultsPerPage: config_1.RES_PER_PAGE,
+        page: 1
     }
 };
 const loadRecipe = function(id) {
     return __awaiter(this, void 0, void 0, function*() {
         try {
             const data = yield (0, helpers_1.getJson)(`${config_1.API_URL}${id}`);
-            if (data.status === "success") {
+            if ("recipe" in data.data) {
                 const recipe = data.data.recipe;
                 exports.state.recipe = {
                     id: recipe.id,
@@ -16498,10 +16504,11 @@ const loadRecipe = function(id) {
 exports.loadRecipe = loadRecipe;
 const loadSearchResults = function(query) {
     return __awaiter(this, void 0, void 0, function*() {
+        // `https://forkify-api.herokuapp.com/api/v2/recipes?search=pizza`;
         try {
             exports.state.search.query = query;
             const data = yield (0, helpers_1.getJson)(`${config_1.API_URL}?search=${query}`);
-            exports.state.search.result = data.data.recipes.map((rec)=>{
+            if ("recipes" in data.data) exports.state.search.result = data.data.recipes.map((rec)=>{
                 return {
                     id: rec.id,
                     title: rec.title,
@@ -16509,7 +16516,6 @@ const loadSearchResults = function(query) {
                     publisher: rec.publisher
                 };
             });
-        // data.data.recipe;
         } catch (error) {
             console.log(`My erorr ${error}`);
             throw error;
@@ -16517,6 +16523,14 @@ const loadSearchResults = function(query) {
     });
 };
 exports.loadSearchResults = loadSearchResults;
+(0, exports.loadSearchResults)("https://forkify-api.herokuapp.com/api/v2/recipes?search=pizza");
+const getSearchResultsPage = function(page = 1) {
+    exports.state.search.page = page;
+    const start = (page - 1) * exports.state.search.resultsPerPage; // 0;
+    const end = page * exports.state.search.resultsPerPage; // 9;
+    return exports.state.search.result.slice(start, end);
+};
+exports.getSearchResultsPage = getSearchResultsPage;
 
 },{"111d130c2903409c":"hGI1E","b3edc9e0a51f0f5":"k5Hzs"}],"hGI1E":[function(require,module,exports) {
 "use strict";
@@ -16585,10 +16599,11 @@ exports.getJson = getJson;
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.TIMEOUT_SEC = exports.API_KEY = exports.API_URL = void 0;
+exports.RES_PER_PAGE = exports.TIMEOUT_SEC = exports.API_KEY = exports.API_URL = void 0;
 exports.API_URL = `https://forkify-api.herokuapp.com/api/v2/recipes/`;
 exports.API_KEY = "4eed75af-6ec0-42cd-ba0e-5c749b288760";
 exports.TIMEOUT_SEC = 10;
+exports.RES_PER_PAGE = 15;
 
 },{}],"l60JC":[function(require,module,exports) {
 "use strict";
@@ -16857,9 +16872,9 @@ Object.defineProperty(exports, "__esModule", {
 const icons_svg_1 = __importDefault(require("a7032057adca73f"));
 class View {
     constructor(){
-        this.data = {};
         this.errorMessage = "No recipes found for your query! Please try again";
         this.defaultMessage = `Start by searching for a recipe or an ingredient. Have fun!`;
+        this.data = {};
     }
     render(data) {
         if (!data || Array.isArray(data) && data.length === 0) return this.renderError();
@@ -16955,7 +16970,8 @@ class ResultsView extends View_1.default {
         this.parentElement = document.querySelector(".results");
     }
     generateMarkup() {
-        return this.data.map((recipe)=>{
+        const recipes = this.data;
+        return recipes.map((recipe)=>{
             const markup = `
       <li class="preview">
         <a class="preview__link " href="#${recipe.id}">
@@ -16975,6 +16991,73 @@ class ResultsView extends View_1.default {
 }
 exports.default = new ResultsView();
 
-},{"ad23b5387136473b":"5cUXS"}]},["d8XZh","aenu9"], "aenu9", "parcelRequirea6cc")
+},{"ad23b5387136473b":"5cUXS"}],"6z7bi":[function(require,module,exports) {
+"use strict";
+var __importDefault = this && this.__importDefault || function(mod) {
+    return mod && mod.__esModule ? mod : {
+        "default": mod
+    };
+};
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+const icons_svg_1 = __importDefault(require("5b725db240e8b831"));
+const View_1 = __importDefault(require("e7d0b51536015e35"));
+class PaginationView extends View_1.default {
+    constructor(){
+        super(...arguments);
+        this.parentElement = document.querySelector(".pagination");
+        this.currPage = 1;
+    }
+    generatePreviousButton() {
+        const markup = `
+      <button data-goto = "${this.currPage - 1}" class="btn--inline pagination__btn--prev">
+        <svg class="search__icon">
+          <use href="${icons_svg_1.default}#icon-arrow-left"></use>
+        </svg>
+        <span>Page ${this.currPage - 1}</span>
+      </button>
+      `;
+        return markup;
+    }
+    generateNextButton() {
+        const markup = `
+      <button  data-goto = "${this.currPage + 1}" class="btn--inline pagination__btn--next">
+        <span>Page ${this.currPage + 1}</span>
+        <svg class="search__icon">
+          <use href="${icons_svg_1.default}#icon-arrow-right"></use>
+        </svg>
+      </button> 
+      `;
+        return markup;
+    }
+    addHandlerClick(handler) {
+        this.parentElement.addEventListener("click", function(e) {
+            const btn = e.target.closest(".btn--inline");
+            if (!btn) return;
+            const goToPage = +btn.dataset.goto;
+            handler(goToPage);
+        });
+    }
+    generateMarkup() {
+        this.currPage = this.data.page;
+        console.log(this.currPage);
+        const numPages = Math.ceil(this.data.result.length / this.data.resultsPerPage);
+        // Page 1 and there are other pages
+        if (this.currPage === 1 && numPages > 1) return this.generateNextButton();
+        // Last page
+        if (this.currPage === numPages && numPages > 1) return this.generatePreviousButton();
+        // Other page
+        if (this.currPage < numPages) {
+            const markup = `${this.generatePreviousButton()} ${this.generateNextButton()}`;
+            return markup;
+        }
+        // Page 1 and there are no other pages
+        return "";
+    }
+}
+exports.default = new PaginationView();
+
+},{"e7d0b51536015e35":"5cUXS","5b725db240e8b831":"loVOp"}]},["d8XZh","aenu9"], "aenu9", "parcelRequirea6cc")
 
 //# sourceMappingURL=index.e37f48ea.js.map

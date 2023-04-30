@@ -1,13 +1,15 @@
 import icons from 'url:../../img/icons.svg';
 
 import View from './View';
+import { Recipe } from '../interfaces/interfases';
 
 class ResultsView extends View {
   public parentElement = document.querySelector('.results') as HTMLElement;
 
   public generateMarkup(): string {
-    return this.data
-      .map((recipe) => {
+    const recipes = this.data as Recipe[];
+    return recipes
+      .map((recipe: Recipe) => {
         const markup = `
       <li class="preview">
         <a class="preview__link " href="#${recipe.id}">

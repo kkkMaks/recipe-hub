@@ -1,16 +1,16 @@
 import icons from 'url:../../img/icons.svg';
 
-import { State } from '../controller';
+import { Recipe, State } from '../interfaces/interfases';
 
 export default abstract class View {
-  protected data: State = {};
   protected errorMessage = 'No recipes found for your query! Please try again';
   protected defaultMessage = `Start by searching for a recipe or an ingredient. Have fun!`;
 
+  protected data: Recipe | Recipe[] = {} as Recipe;
   protected abstract parentElement: HTMLElement;
   protected abstract generateMarkup(): string;
 
-  public render(data: State) {
+  public render(data: Recipe[] | Recipe) {
     if (!data || (Array.isArray(data) && data.length === 0))
       return this.renderError();
 

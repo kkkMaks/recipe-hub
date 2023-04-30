@@ -18,6 +18,7 @@ const model_1 = require("./model");
 const recipeView_1 = __importDefault(require("./views/recipeView"));
 const searchView_1 = __importDefault(require("./views/searchView"));
 const resultView_1 = __importDefault(require("./views/resultView"));
+const paginationView_1 = __importDefault(require("./views/paginationView"));
 const controlRecipes = function () {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -27,7 +28,7 @@ const controlRecipes = function () {
             recipeView_1.default.renderSpinner();
             // 1) Loading data
             yield (0, model_1.loadRecipe)(id);
-            const recipe = model_1.state.recipe; //return {}
+            const recipe = model_1.state.recipe;
             if (!recipe)
                 throw new Error('Id not found');
             // 2) Rendering data
@@ -43,14 +44,20 @@ const controlRecipes = function () {
 const controlSearchResults = function () {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            console.log(1);
+            // Get search query
             const query = searchView_1.default.getQuery();
             if (!query)
                 return;
+            // Load search results
             resultView_1.default.renderSpinner();
             yield (0, model_1.loadSearchResults)(query);
-            const data = model_1.state.search.result;
-            // render data
-            resultView_1.default.render(data);
+            const currPage = model_1.state.search.page;
+            // Render results
+            resultView_1.default.render((0, model_1.getSearchResultsPage)(currPage));
+            // Render pagination buttons
+            console.log(model_1.state.search);
+            paginationView_1.default.render(model_1.state.search);
         }
         catch (error) {
             resultView_1.default.clear();
@@ -58,8 +65,15 @@ const controlSearchResults = function () {
         }
     });
 };
+const controlPagination = function (goToPage) {
+    // Render NEW results
+    resultView_1.default.render((0, model_1.getSearchResultsPage)(goToPage));
+    // Render pagination buttons
+    paginationView_1.default.render(model_1.state.search);
+};
 const init = function () {
     recipeView_1.default.addHandlerRender(controlRecipes);
     searchView_1.default.addHandlerSearch(controlSearchResults);
+    paginationView_1.default.addHandlerClick(controlPagination);
 };
 init();

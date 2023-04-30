@@ -1,14 +1,9 @@
 import fracty from 'fracty';
-import { State } from '../controller';
 import icons from 'url:../../img/icons.svg';
 
-import View from './View';
+import { Ingredients, Recipe } from '../interfaces/interfases';
 
-interface Ingredients {
-  quantity: number;
-  unit: string;
-  description: string;
-}
+import View from './View';
 
 class RecipeView extends View {
   public parentElement = document.querySelector('.recipe') as HTMLDivElement;
@@ -36,7 +31,7 @@ class RecipeView extends View {
   }
 
   public generateMarkup() {
-    const recipeInfo: State = this.data;
+    const recipeInfo: Recipe = this.data as Recipe;
     console.log(recipeInfo);
 
     return `

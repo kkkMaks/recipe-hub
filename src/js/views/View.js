@@ -6,9 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const icons_svg_1 = __importDefault(require("url:../../img/icons.svg"));
 class View {
     constructor() {
-        this.data = {};
         this.errorMessage = 'No recipes found for your query! Please try again';
         this.defaultMessage = `Start by searching for a recipe or an ingredient. Have fun!`;
+        this.data = {};
     }
     render(data) {
         if (!data || (Array.isArray(data) && data.length === 0))
