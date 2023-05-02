@@ -49,7 +49,7 @@ class PaginationView extends View {
 
   public generateMarkup() {
     this.currPage = this.data.page;
-    console.log(this.currPage);
+    // console.log(this.currPage);
 
     const numPages = Math.ceil(
       this.data.result.length / this.data.resultsPerPage

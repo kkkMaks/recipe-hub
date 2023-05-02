@@ -22,19 +22,18 @@ const paginationView_1 = __importDefault(require("./views/paginationView"));
 const controlRecipes = function () {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            console.log(`controlRecipes 1`);
             const id = window.location.hash.slice(1);
             if (!id)
                 return;
             recipeView_1.default.renderSpinner();
+            // Update results view to mark selected search result
+            resultView_1.default.update((0, model_1.getSearchResultsPage)(model_1.state.search.page));
             // 1) Loading data
             yield (0, model_1.loadRecipe)(id);
-            const recipe = model_1.state.recipe;
-            if (!recipe)
+            if (!model_1.state.recipe)
                 throw new Error('Id not found');
             // 2) Rendering data
-            recipeView_1.default.render(recipe);
-            console.log(`controlRecipes 2`);
+            recipeView_1.default.render(model_1.state.recipe);
         }
         catch (error) {
             recipeView_1.default.clear();
@@ -46,7 +45,6 @@ const controlRecipes = function () {
 const controlSearchResults = function () {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            console.log(`controlSearchResults 1`);
             // Get search query
             const query = searchView_1.default.getQuery();
             if (!query)
@@ -60,7 +58,6 @@ const controlSearchResults = function () {
             // Render pagination buttons
             console.log(model_1.state.search);
             paginationView_1.default.render(model_1.state.search);
-            console.log(`controlSearchResults 2`);
         }
         catch (error) {
             resultView_1.default.clear();

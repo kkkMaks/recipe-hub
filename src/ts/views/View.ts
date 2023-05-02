@@ -20,46 +20,39 @@ export default abstract class View {
     this.parentElement.insertAdjacentHTML('beforeend', markup);
   }
 
-  // public update(data: Recipe[] | Recipe) {
-  //   // отримуємо масив рецептів
-  //   this.data = data;
-  //   console.log(`data`);
-  //   console.log(data);
+  public update(data: Recipe[] | Recipe) {
+    // отримуємо масив рецептів
+    this.data = data;
 
-  //   const newMarkup = this.generateMarkup();
-  //   console.log('newMarkUp');
-  //   console.log(newMarkup);
+    const newMarkup = this.generateMarkup();
 
-  //   const newDOM = document.createRange().createContextualFragment(newMarkup);
+    const newDOM = document.createRange().createContextualFragment(newMarkup);
 
-  //   const newElements = Array.from(newDOM.querySelectorAll('*'));
-  //   const curElements = Array.from(this.parentElement.querySelectorAll('*'));
+    const newElements = Array.from(newDOM.querySelectorAll('*'));
+    const curElements = Array.from(this.parentElement.querySelectorAll('*'));
 
-  //   // console.log(newElements);
-  //   // console.log(curElements);
+    newElements.forEach((newEl, i) => {
+      const curEl = curElements[i];
 
-  //   newElements.forEach((newEl, i) => {
-  //     const curEl = curElements[i];
+      // Update changed Text
+      if (
+        !newEl.isEqualNode(curEl) &&
+        newEl.firstChild?.nodeValue?.trim() !== ''
+      ) {
+        // console.log(curEl);
+        // console.log(newEl.firstChild?.nodeValue);
 
-  //     // Update changed Text
-  //     if (
-  //       !newEl.isEqualNode(curEl) &&
-  //       newEl.firstChild?.nodeValue?.trim() !== ''
-  //     ) {
-  //       // console.log(curEl);
-  //       // console.log(newEl.firstChild?.nodeValue);
+        curEl.textContent = newEl.textContent;
+      }
 
-  //       curEl.textContent = newEl.textContent;
-  //     }
-
-  //     // Update changed attributes
-  //     if (!newEl.isEqualNode(curEl)) {
-  //       Array.from(newEl.attributes).forEach((attr) =>
-  //         curEl.setAttribute(attr.name, attr.value)
-  //       );
-  //     }
-  //   });
-  // }
+      // Update changed attributes
+      if (!newEl.isEqualNode(curEl)) {
+        Array.from(newEl.attributes).forEach((attr) =>
+          curEl.setAttribute(attr.name, attr.value)
+        );
+      }
+    });
+  }
 
   public renderSpinner() {
     const markup = ` 

@@ -16,23 +16,21 @@ import paginationView from './views/paginationView';
 
 const controlRecipes = async function () {
   try {
-    console.log(`controlRecipes 1`);
-
     const id = window.location.hash.slice(1);
 
     if (!id) return;
     recipeView.renderSpinner();
 
+    // Update results view to mark selected search result
+    resultView.update(getSearchResultsPage(state.search.page));
+
     // 1) Loading data
     await loadRecipe(id);
 
-    const recipe = state.recipe as Recipe;
-
-    if (!recipe) throw new Error('Id not found');
+    if (!state.recipe) throw new Error('Id not found');
 
     // 2) Rendering data
-    recipeView.render(recipe);
-    console.log(`controlRecipes 2`);
+    recipeView.render(state.recipe);
   } catch (error: any) {
     recipeView.clear();
     recipeView.renderError(error);
@@ -42,8 +40,6 @@ const controlRecipes = async function () {
 
 const controlSearchResults = async function () {
   try {
-    console.log(`controlSearchResults 1`);
-
     // Get search query
     const query = searchView.getQuery();
     if (!query) return;
@@ -59,7 +55,6 @@ const controlSearchResults = async function () {
     // Render pagination buttons
     console.log(state.search);
     paginationView.render(state.search);
-    console.log(`controlSearchResults 2`);
   } catch (error) {
     resultView.clear();
     resultView.renderError(error as string);

@@ -79,8 +79,8 @@ export const getSearchResultsPage = function (page: number = 1) {
   // 36 - 48
   const start = (page - 1) * state.search.resultsPerPage; // 0;
   const end = page * state.search.resultsPerPage; // 9;
-  console.log('getSearchResultsPage');
-  console.log(state.search.result.slice(start, end));
+  // console.log('getSearchResultsPage');
+  // console.log(state.search.result.slice(start, end));
   return state.search.result.slice(start, end);
 };
 
