@@ -26,6 +26,8 @@ const controlRecipes = function () {
             if (!id)
                 return;
             recipeView_1.default.renderSpinner();
+            // Update results view to mark selected search result
+            resultView_1.default.update((0, model_1.getSearchResultsPage)());
             // 1) Loading data
             yield (0, model_1.loadRecipe)(id);
             const recipe = model_1.state.recipe;
@@ -75,8 +77,8 @@ const controlServings = function (newServings) {
     // Update the recipe servings (in the state)
     (0, model_1.updateServings)(newServings);
     // Update the recipe view
-    recipeView_1.default.render(model_1.state.recipe);
-    // recipeView.update(state.recipe)
+    // recipeView.render(state.recipe);
+    recipeView_1.default.update(model_1.state.recipe);
 };
 const searchBar = document.querySelector('.search__field');
 const dropdown = document.querySelector('.dropdown');

@@ -7,12 +7,15 @@ class ResultsView extends View {
   public parentElement = document.querySelector('.results') as HTMLElement;
 
   public generateMarkup(): string {
+    const id = window.location.hash.slice(1);
     const recipes = this.data as Recipe[];
     return recipes
       .map((recipe: Recipe) => {
         const markup = `
       <li class="preview">
-        <a class="preview__link " href="#${recipe.id}">
+        <a class="preview__link ${
+          recipe.id === id ? 'preview__link--active' : ''
+        }" href="#${recipe.id}">
           <figure class="preview__fig">
             <img src="${recipe.image}" alt="Test" />
           </figure>

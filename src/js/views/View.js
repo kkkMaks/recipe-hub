@@ -18,6 +18,28 @@ class View {
         this.clear();
         this.parentElement.insertAdjacentHTML('beforeend', markup);
     }
+    update(data) {
+        this.data = data;
+        const newMarkup = this.generateMarkup();
+        const newDOM = document.createRange().createContextualFragment(newMarkup);
+        const newElements = Array.from(newDOM.querySelectorAll('*'));
+        const curElements = Array.from(this.parentElement.querySelectorAll('*'));
+        newElements.forEach((newEl, i) => {
+            var _a, _b;
+            const curEl = curElements[i];
+            // Update changed Text
+            if (!newEl.isEqualNode(curEl) &&
+                ((_b = (_a = newEl.firstChild) === null || _a === void 0 ? void 0 : _a.nodeValue) === null || _b === void 0 ? void 0 : _b.trim()) !== '') {
+                // console.log(curEl);
+                // console.log(newEl.firstChild?.nodeValue);
+                curEl.textContent = newEl.textContent;
+            }
+            // Update changed attributes
+            if (!newEl.isEqualNode(curEl) && newEl.attributes[1]) {
+                Array.from(newEl.attributes).forEach((attr) => curEl.setAttribute(attr.name, attr.value));
+            }
+        });
+    }
     renderSpinner() {
         const markup = ` 
     <div class="spinner">

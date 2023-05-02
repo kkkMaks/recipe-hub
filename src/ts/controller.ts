@@ -21,6 +21,9 @@ const controlRecipes = async function () {
     if (!id) return;
     recipeView.renderSpinner();
 
+    // Update results view to mark selected search result
+    resultView.update(getSearchResultsPage());
+
     // 1) Loading data
     await loadRecipe(id);
 
@@ -75,8 +78,8 @@ const controlServings = function (newServings) {
   updateServings(newServings);
 
   // Update the recipe view
-  recipeView.render(state.recipe);
-  // recipeView.update(state.recipe)
+  // recipeView.render(state.recipe);
+  recipeView.update(state.recipe);
 };
 
 const searchBar = document.querySelector('.search__field');
