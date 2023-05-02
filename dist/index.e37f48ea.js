@@ -603,17 +603,17 @@ const paginationView_1 = __importDefault(require("aa24829ad552d1c4"));
 const controlRecipes = function() {
     return __awaiter(this, void 0, void 0, function*() {
         try {
+            console.log(`controlRecipes 1`);
             const id = window.location.hash.slice(1);
             if (!id) return;
             recipeView_1.default.renderSpinner();
-            // Update results view to mark selected search result
-            resultView_1.default.update((0, model_1.getSearchResultsPage)());
             // 1) Loading data
             yield (0, model_1.loadRecipe)(id);
             const recipe = model_1.state.recipe;
             if (!recipe) throw new Error("Id not found");
             // 2) Rendering data
             recipeView_1.default.render(recipe);
+            console.log(`controlRecipes 2`);
         } catch (error) {
             recipeView_1.default.clear();
             recipeView_1.default.renderError(error);
@@ -624,7 +624,7 @@ const controlRecipes = function() {
 const controlSearchResults = function() {
     return __awaiter(this, void 0, void 0, function*() {
         try {
-            console.log(1);
+            console.log(`controlSearchResults 1`);
             // Get search query
             const query = searchView_1.default.getQuery();
             if (!query) return;
@@ -637,6 +637,7 @@ const controlSearchResults = function() {
             // Render pagination buttons
             console.log(model_1.state.search);
             paginationView_1.default.render(model_1.state.search);
+            console.log(`controlSearchResults 2`);
         } catch (error) {
             resultView_1.default.clear();
             resultView_1.default.renderError(error);
@@ -16554,8 +16555,15 @@ exports.loadSearchResults = loadSearchResults;
 (0, exports.loadSearchResults)("https://forkify-api.herokuapp.com/api/v2/recipes?search=pizza");
 const getSearchResultsPage = function(page = 1) {
     exports.state.search.page = page;
+    // 38
+    // 0 - 12
+    // 12 - 24
+    // 24 - 36
+    // 36 - 48
     const start = (page - 1) * exports.state.search.resultsPerPage; // 0;
     const end = page * exports.state.search.resultsPerPage; // 9;
+    console.log("getSearchResultsPage");
+    console.log(exports.state.search.result.slice(start, end));
     return exports.state.search.result.slice(start, end);
 };
 exports.getSearchResultsPage = getSearchResultsPage;
@@ -16639,7 +16647,7 @@ exports.RES_PER_PAGE = exports.TIMEOUT_SEC = exports.API_KEY = exports.API_URL =
 exports.API_URL = `https://forkify-api.herokuapp.com/api/v2/recipes/`;
 exports.API_KEY = "4eed75af-6ec0-42cd-ba0e-5c749b288760";
 exports.TIMEOUT_SEC = 10;
-exports.RES_PER_PAGE = 15;
+exports.RES_PER_PAGE = 12;
 
 },{}],"l60JC":[function(require,module,exports) {
 "use strict";
@@ -16691,7 +16699,7 @@ class RecipeView extends View_1.default {
     }
     generateMarkup() {
         const recipeInfo = this.data;
-        console.log(recipeInfo);
+        // console.log(recipeInfo);
         return `
         <figure class="recipe__fig">
           <img src="${recipeInfo.image}" alt="Tomato" class="recipe__img" />
@@ -16927,23 +16935,38 @@ class View {
         this.clear();
         this.parentElement.insertAdjacentHTML("beforeend", markup);
     }
-    update(data) {
-        this.data = data;
-        const newMarkup = this.generateMarkup();
-        const newDOM = document.createRange().createContextualFragment(newMarkup);
-        const newElements = Array.from(newDOM.querySelectorAll("*"));
-        const curElements = Array.from(this.parentElement.querySelectorAll("*"));
-        newElements.forEach((newEl, i)=>{
-            var _a, _b;
-            const curEl = curElements[i];
-            // Update changed Text
-            if (!newEl.isEqualNode(curEl) && ((_b = (_a = newEl.firstChild) === null || _a === void 0 ? void 0 : _a.nodeValue) === null || _b === void 0 ? void 0 : _b.trim()) !== "") // console.log(curEl);
-            // console.log(newEl.firstChild?.nodeValue);
-            curEl.textContent = newEl.textContent;
-            // Update changed attributes
-            if (!newEl.isEqualNode(curEl) && newEl.attributes[1]) Array.from(newEl.attributes).forEach((attr)=>curEl.setAttribute(attr.name, attr.value));
-        });
-    }
+    // public update(data: Recipe[] | Recipe) {
+    //   // отримуємо масив рецептів
+    //   this.data = data;
+    //   console.log(`data`);
+    //   console.log(data);
+    //   const newMarkup = this.generateMarkup();
+    //   console.log('newMarkUp');
+    //   console.log(newMarkup);
+    //   const newDOM = document.createRange().createContextualFragment(newMarkup);
+    //   const newElements = Array.from(newDOM.querySelectorAll('*'));
+    //   const curElements = Array.from(this.parentElement.querySelectorAll('*'));
+    //   // console.log(newElements);
+    //   // console.log(curElements);
+    //   newElements.forEach((newEl, i) => {
+    //     const curEl = curElements[i];
+    //     // Update changed Text
+    //     if (
+    //       !newEl.isEqualNode(curEl) &&
+    //       newEl.firstChild?.nodeValue?.trim() !== ''
+    //     ) {
+    //       // console.log(curEl);
+    //       // console.log(newEl.firstChild?.nodeValue);
+    //       curEl.textContent = newEl.textContent;
+    //     }
+    //     // Update changed attributes
+    //     if (!newEl.isEqualNode(curEl)) {
+    //       Array.from(newEl.attributes).forEach((attr) =>
+    //         curEl.setAttribute(attr.name, attr.value)
+    //       );
+    //     }
+    //   });
+    // }
     renderSpinner() {
         const markup = ` 
     <div class="spinner">
@@ -17031,10 +17054,11 @@ class ResultsView extends View_1.default {
         this.parentElement = document.querySelector(".results");
     }
     generateMarkup() {
+        return this.data.map(this.generateMarkupPreview).join("");
+    }
+    generateMarkupPreview(recipe) {
         const id = window.location.hash.slice(1);
-        const recipes = this.data;
-        return recipes.map((recipe)=>{
-            const markup = `
+        return `
       <li class="preview">
         <a class="preview__link ${recipe.id === id ? "preview__link--active" : ""}" href="#${recipe.id}">
           <figure class="preview__fig">
@@ -17047,8 +17071,6 @@ class ResultsView extends View_1.default {
           </div>
         </a>
       </li>`;
-            return markup;
-        }).join("");
     }
 }
 exports.default = new ResultsView();

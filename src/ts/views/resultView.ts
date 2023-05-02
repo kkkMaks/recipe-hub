@@ -7,11 +7,12 @@ class ResultsView extends View {
   public parentElement = document.querySelector('.results') as HTMLElement;
 
   public generateMarkup(): string {
+    return this.data.map(this.generateMarkupPreview).join('');
+  }
+  public generateMarkupPreview(recipe: Recipe) {
     const id = window.location.hash.slice(1);
-    const recipes = this.data as Recipe[];
-    return recipes
-      .map((recipe: Recipe) => {
-        const markup = `
+
+    return `
       <li class="preview">
         <a class="preview__link ${
           recipe.id === id ? 'preview__link--active' : ''
@@ -26,10 +27,6 @@ class ResultsView extends View {
           </div>
         </a>
       </li>`;
-
-        return markup;
-      })
-      .join('');
   }
 }
 

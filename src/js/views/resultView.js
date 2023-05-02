@@ -10,11 +10,11 @@ class ResultsView extends View_1.default {
         this.parentElement = document.querySelector('.results');
     }
     generateMarkup() {
+        return this.data.map(this.generateMarkupPreview).join('');
+    }
+    generateMarkupPreview(recipe) {
         const id = window.location.hash.slice(1);
-        const recipes = this.data;
-        return recipes
-            .map((recipe) => {
-            const markup = `
+        return `
       <li class="preview">
         <a class="preview__link ${recipe.id === id ? 'preview__link--active' : ''}" href="#${recipe.id}">
           <figure class="preview__fig">
@@ -27,9 +27,6 @@ class ResultsView extends View_1.default {
           </div>
         </a>
       </li>`;
-            return markup;
-        })
-            .join('');
     }
 }
 exports.default = new ResultsView();

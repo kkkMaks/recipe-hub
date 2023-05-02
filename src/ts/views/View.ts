@@ -20,36 +20,46 @@ export default abstract class View {
     this.parentElement.insertAdjacentHTML('beforeend', markup);
   }
 
-  public update(data: Recipe[] | Recipe) {
-    this.data = data;
-    const newMarkup = this.generateMarkup();
-    const newDOM = document.createRange().createContextualFragment(newMarkup);
+  // public update(data: Recipe[] | Recipe) {
+  //   // отримуємо масив рецептів
+  //   this.data = data;
+  //   console.log(`data`);
+  //   console.log(data);
 
-    const newElements = Array.from(newDOM.querySelectorAll('*'));
-    const curElements = Array.from(this.parentElement.querySelectorAll('*'));
+  //   const newMarkup = this.generateMarkup();
+  //   console.log('newMarkUp');
+  //   console.log(newMarkup);
 
-    newElements.forEach((newEl, i) => {
-      const curEl = curElements[i];
+  //   const newDOM = document.createRange().createContextualFragment(newMarkup);
 
-      // Update changed Text
-      if (
-        !newEl.isEqualNode(curEl) &&
-        newEl.firstChild?.nodeValue?.trim() !== ''
-      ) {
-        // console.log(curEl);
-        // console.log(newEl.firstChild?.nodeValue);
+  //   const newElements = Array.from(newDOM.querySelectorAll('*'));
+  //   const curElements = Array.from(this.parentElement.querySelectorAll('*'));
 
-        curEl.textContent = newEl.textContent;
-      }
+  //   // console.log(newElements);
+  //   // console.log(curElements);
 
-      // Update changed attributes
-      if (!newEl.isEqualNode(curEl) && newEl.attributes[1]) {
-        Array.from(newEl.attributes).forEach((attr) =>
-          curEl.setAttribute(attr.name, attr.value)
-        );
-      }
-    });
-  }
+  //   newElements.forEach((newEl, i) => {
+  //     const curEl = curElements[i];
+
+  //     // Update changed Text
+  //     if (
+  //       !newEl.isEqualNode(curEl) &&
+  //       newEl.firstChild?.nodeValue?.trim() !== ''
+  //     ) {
+  //       // console.log(curEl);
+  //       // console.log(newEl.firstChild?.nodeValue);
+
+  //       curEl.textContent = newEl.textContent;
+  //     }
+
+  //     // Update changed attributes
+  //     if (!newEl.isEqualNode(curEl)) {
+  //       Array.from(newEl.attributes).forEach((attr) =>
+  //         curEl.setAttribute(attr.name, attr.value)
+  //       );
+  //     }
+  //   });
+  // }
 
   public renderSpinner() {
     const markup = ` 

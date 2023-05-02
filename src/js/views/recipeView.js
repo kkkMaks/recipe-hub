@@ -42,7 +42,7 @@ class RecipeView extends View_1.default {
     }
     generateMarkup() {
         const recipeInfo = this.data;
-        console.log(recipeInfo);
+        // console.log(recipeInfo);
         return `
         <figure class="recipe__fig">
           <img src="${recipeInfo.image}" alt="Tomato" class="recipe__img" />

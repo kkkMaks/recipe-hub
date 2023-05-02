@@ -72,8 +72,15 @@ exports.loadSearchResults = loadSearchResults;
 (0, exports.loadSearchResults)('https://forkify-api.herokuapp.com/api/v2/recipes?search=pizza');
 const getSearchResultsPage = function (page = 1) {
     exports.state.search.page = page;
+    // 38
+    // 0 - 12
+    // 12 - 24
+    // 24 - 36
+    // 36 - 48
     const start = (page - 1) * exports.state.search.resultsPerPage; // 0;
     const end = page * exports.state.search.resultsPerPage; // 9;
+    console.log('getSearchResultsPage');
+    console.log(exports.state.search.result.slice(start, end));
     return exports.state.search.result.slice(start, end);
 };
 exports.getSearchResultsPage = getSearchResultsPage;

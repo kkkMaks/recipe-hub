@@ -43,7 +43,7 @@ class RecipeView extends View {
 
   public generateMarkup() {
     const recipeInfo: Recipe = this.data as Recipe;
-    console.log(recipeInfo);
+    // console.log(recipeInfo);
 
     return `
         <figure class="recipe__fig">
