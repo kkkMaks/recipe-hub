@@ -4,6 +4,7 @@ import {
   StateTemp,
   ApiResponse,
   SuccessResponse,
+  Recipe,
 } from './interfaces/interfases';
 
 export const state: StateTemp = {
@@ -74,4 +75,12 @@ export const getSearchResultsPage = function (page: number = 1) {
   const start = (page - 1) * state.search.resultsPerPage; // 0;
   const end = page * state.search.resultsPerPage; // 9;
   return state.search.result.slice(start, end);
+};
+
+export const updateServings = function (newServings) {
+  const coefficient = newServings / state.recipe.servings;
+  state.recipe.ingredients.forEach((ingredient) => {
+    ingredient.quantity = ingredient.quantity * coefficient;
+  });
+  state.recipe.servings = newServings;
 };

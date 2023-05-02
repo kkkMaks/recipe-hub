@@ -71,8 +71,36 @@ const controlPagination = function (goToPage) {
     // Render pagination buttons
     paginationView_1.default.render(model_1.state.search);
 };
+const controlServings = function (newServings) {
+    // Update the recipe servings (in the state)
+    (0, model_1.updateServings)(newServings);
+    // Update the recipe view
+    recipeView_1.default.render(model_1.state.recipe);
+    // recipeView.update(state.recipe)
+};
+const searchBar = document.querySelector('.search__field');
+const dropdown = document.querySelector('.dropdown');
+const searchBtn = document.querySelector('.search__btn');
+// Show dropdown on focus
+searchBar === null || searchBar === void 0 ? void 0 : searchBar.addEventListener('focus', () => {
+    dropdown.style.display = 'block';
+});
+// Trigger search when user clicks on an item in the dropdown
+dropdown === null || dropdown === void 0 ? void 0 : dropdown.addEventListener('click', (e) => {
+    if (e.target.tagName === 'LI') {
+        searchBar.value = e.target.textContent;
+        searchBtn.click();
+    }
+});
+// Hide dropdown when user clicks outside the search wrapper
+document.addEventListener('click', (e) => {
+    if (!(e === null || e === void 0 ? void 0 : e.target.closest('.search__wrapper'))) {
+        dropdown.style.display = 'none';
+    }
+});
 const init = function () {
     recipeView_1.default.addHandlerRender(controlRecipes);
+    recipeView_1.default.addHandlerUpdateServings(controlServings);
     searchView_1.default.addHandlerSearch(controlSearchResults);
     paginationView_1.default.addHandlerClick(controlPagination);
 };

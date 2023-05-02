@@ -6,6 +6,7 @@ import {
   loadSearchResults,
   getSearchResultsPage,
   state,
+  updateServings,
 } from './model';
 import { Recipe } from './interfaces/interfases';
 import recipeView from './views/recipeView';
@@ -69,8 +70,42 @@ const controlPagination = function (goToPage: number) {
   paginationView.render(state.search);
 };
 
+const controlServings = function (newServings) {
+  // Update the recipe servings (in the state)
+  updateServings(newServings);
+
+  // Update the recipe view
+  recipeView.render(state.recipe);
+  // recipeView.update(state.recipe)
+};
+
+const searchBar = document.querySelector('.search__field');
+const dropdown = document.querySelector('.dropdown');
+const searchBtn = document.querySelector('.search__btn');
+
+// Show dropdown on focus
+searchBar?.addEventListener('focus', () => {
+  dropdown.style.display = 'block';
+});
+
+// Trigger search when user clicks on an item in the dropdown
+dropdown?.addEventListener('click', (e) => {
+  if (e.target.tagName === 'LI') {
+    searchBar.value = e.target.textContent;
+    searchBtn.click();
+  }
+});
+
+// Hide dropdown when user clicks outside the search wrapper
+document.addEventListener('click', (e) => {
+  if (!e?.target.closest('.search__wrapper')) {
+    dropdown.style.display = 'none';
+  }
+});
+
 const init = function () {
   recipeView.addHandlerRender(controlRecipes);
+  recipeView.addHandlerUpdateServings(controlServings);
   searchView.addHandlerSearch(controlSearchResults);
   paginationView.addHandlerClick(controlPagination);
 };

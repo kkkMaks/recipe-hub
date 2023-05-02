@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getSearchResultsPage = exports.loadSearchResults = exports.loadRecipe = exports.state = void 0;
+exports.updateServings = exports.getSearchResultsPage = exports.loadSearchResults = exports.loadRecipe = exports.state = void 0;
 const helpers_1 = require("./helpers");
 const config_1 = require("./config");
 exports.state = {
@@ -77,3 +77,11 @@ const getSearchResultsPage = function (page = 1) {
     return exports.state.search.result.slice(start, end);
 };
 exports.getSearchResultsPage = getSearchResultsPage;
+const updateServings = function (newServings) {
+    const coefficient = newServings / exports.state.recipe.servings;
+    exports.state.recipe.ingredients.forEach((ingredient) => {
+        ingredient.quantity = ingredient.quantity * coefficient;
+    });
+    exports.state.recipe.servings = newServings;
+};
+exports.updateServings = updateServings;

@@ -647,8 +647,34 @@ const controlPagination = function(goToPage) {
     // Render pagination buttons
     paginationView_1.default.render(model_1.state.search);
 };
+const controlServings = function(newServings) {
+    // Update the recipe servings (in the state)
+    (0, model_1.updateServings)(newServings);
+    // Update the recipe view
+    recipeView_1.default.render(model_1.state.recipe);
+// recipeView.update(state.recipe)
+};
+const searchBar = document.querySelector(".search__field");
+const dropdown = document.querySelector(".dropdown");
+const searchBtn = document.querySelector(".search__btn");
+// Show dropdown on focus
+searchBar === null || searchBar === void 0 || searchBar.addEventListener("focus", ()=>{
+    dropdown.style.display = "block";
+});
+// Trigger search when user clicks on an item in the dropdown
+dropdown === null || dropdown === void 0 || dropdown.addEventListener("click", (e)=>{
+    if (e.target.tagName === "LI") {
+        searchBar.value = e.target.textContent;
+        searchBtn.click();
+    }
+});
+// Hide dropdown when user clicks outside the search wrapper
+document.addEventListener("click", (e)=>{
+    if (!(e === null || e === void 0 ? void 0 : e.target.closest(".search__wrapper"))) dropdown.style.display = "none";
+});
 const init = function() {
     recipeView_1.default.addHandlerRender(controlRecipes);
+    recipeView_1.default.addHandlerUpdateServings(controlServings);
     searchView_1.default.addHandlerSearch(controlSearchResults);
     paginationView_1.default.addHandlerClick(controlPagination);
 };
@@ -16466,7 +16492,7 @@ var __awaiter = this && this.__awaiter || function(thisArg, _arguments, P, gener
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.getSearchResultsPage = exports.loadSearchResults = exports.loadRecipe = exports.state = void 0;
+exports.updateServings = exports.getSearchResultsPage = exports.loadSearchResults = exports.loadRecipe = exports.state = void 0;
 const helpers_1 = require("111d130c2903409c");
 const config_1 = require("b3edc9e0a51f0f5");
 exports.state = {
@@ -16531,6 +16557,14 @@ const getSearchResultsPage = function(page = 1) {
     return exports.state.search.result.slice(start, end);
 };
 exports.getSearchResultsPage = getSearchResultsPage;
+const updateServings = function(newServings) {
+    const coefficient = newServings / exports.state.recipe.servings;
+    exports.state.recipe.ingredients.forEach((ingredient)=>{
+        ingredient.quantity = ingredient.quantity * coefficient;
+    });
+    exports.state.recipe.servings = newServings;
+};
+exports.updateServings = updateServings;
 
 },{"111d130c2903409c":"hGI1E","b3edc9e0a51f0f5":"k5Hzs"}],"hGI1E":[function(require,module,exports) {
 "use strict";
@@ -16631,6 +16665,14 @@ class RecipeView extends View_1.default {
             window.addEventListener(event, handler);
         });
     }
+    addHandlerUpdateServings(handler) {
+        this.parentElement.addEventListener("click", function(e) {
+            const btn = e.target.closest(".btn--update-servings");
+            const updateTo = +btn.dataset.updateTo;
+            if (!btn) return;
+            if (updateTo > 0) handler(updateTo);
+        });
+    }
     generateMarkupIngredients(ingredient) {
         return `
     <li class="recipe__ingredient">
@@ -16672,12 +16714,12 @@ class RecipeView extends View_1.default {
             <span class="recipe__info-text">servings</span>
 
             <div class="recipe__info-buttons">
-              <button class="btn--tiny btn--increase-servings">
+              <button class="btn--tiny btn--update-servings" data-update-to=${recipeInfo.servings - 1} >
                 <svg>
                   <use href="${icons_svg_1.default}#icon-minus-circle"></use>
                 </svg>
               </button>
-              <button class="btn--tiny btn--increase-servings">
+              <button class="btn--tiny btn--update-servings" data-update-to=${recipeInfo.servings + 1}>
                 <svg>
                   <use href="${icons_svg_1.default}#icon-plus-circle"></use>
                 </svg>
