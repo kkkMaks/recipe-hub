@@ -451,7 +451,7 @@ body {
 
 @media (width <= 580px) {
   .header__logo {
-    height: 3.6rem;
+    height: 4rem;
     margin-left: 2rem;
   }
 
@@ -570,7 +570,7 @@ body {
 
 .search-results {
   flex-direction: column;
-  padding: 3rem 0;
+  padding: 1rem 0;
   display: flex;
 }
 
@@ -580,7 +580,6 @@ body {
 }
 
 .pagination {
-  margin-top: auto;
   padding: 0 3.5rem;
 }
 
@@ -607,6 +606,54 @@ body {
 
 .copyright .twitter-link:link, .copyright .twitter-link:visited {
   color: #918581;
+}
+
+@media (width <= 840px) {
+  .search-results {
+    width: 35rem;
+  }
+}
+
+@media (width <= 760px) {
+  .search-results {
+    width: 28rem;
+  }
+}
+
+@media (width <= 630px) {
+  .btn--inline {
+    width: 8rem;
+    height: 3rem;
+  }
+}
+
+@media (width <= 580px) {
+  .pagination {
+    padding: 0 6rem;
+  }
+
+  .pagination__btn--prev {
+    margin-bottom: 1rem;
+  }
+
+  .btn--inline {
+    width: 11rem;
+    height: 4rem;
+    float: left;
+  }
+
+  .search-results {
+    width: 19rem;
+    padding: 1rem 0;
+  }
+
+  .preview__link:visited {
+    padding: .5rem 2.2rem;
+  }
+
+  .preview__fig {
+    display: none;
+  }
 }
 
 .recipe {
