@@ -19,11 +19,19 @@ class RecipeView extends View_1.default {
     addHandlerUpdateServings(handler) {
         this.parentElement.addEventListener('click', function (e) {
             const btn = e.target.closest('.btn--update-servings');
-            const updateTo = +btn.dataset.updateTo;
             if (!btn)
                 return;
+            const updateTo = +btn.dataset.updateTo;
             if (updateTo > 0)
                 handler(updateTo);
+        });
+    }
+    addHandlerUpdateBookmark(handler) {
+        this.parentElement.addEventListener('click', (e) => {
+            const btnBookmark = e.target.closest('.btn--bookmark');
+            if (!btnBookmark)
+                return;
+            handler();
         });
     }
     generateMarkupIngredients(ingredient) {
@@ -83,9 +91,9 @@ class RecipeView extends View_1.default {
           <div class="recipe__user-generated">
             
           </div>
-          <button class="btn--round">
+          <button class="btn--round btn--bookmark">
             <svg class="">
-              <use href="${icons_svg_1.default}#icon-bookmark-fill"></use>
+              <use href="${icons_svg_1.default}#icon-bookmark${recipeInfo.bookmarked ? '-fill' : ''}"></use>
             </svg>
           </button>
         </div>

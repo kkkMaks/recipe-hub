@@ -42,6 +42,7 @@ export interface StateTemp {
     resultsPerPage: number;
     page: number;
   };
+  bookmarks: Recipe[];
 }
 
 export interface SuccessResponse {
@@ -68,6 +69,7 @@ export interface Recipe {
   publisher: string;
   servings?: number;
   sourceUrl?: string;
+  bookmarked?: boolean;
 }
 
 export interface State {

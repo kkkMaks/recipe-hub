@@ -599,6 +599,7 @@ const model_1 = require("7439d74db8fa8990");
 const recipeView_1 = __importDefault(require("c18462d8301541d2"));
 const searchView_1 = __importDefault(require("b3107744d63c7c23"));
 const resultView_1 = __importDefault(require("19d111d1d31e7dc4"));
+const bookmarksView_1 = __importDefault(require("97c5dc988bb3434f"));
 const paginationView_1 = __importDefault(require("aa24829ad552d1c4"));
 const controlRecipes = function() {
     return __awaiter(this, void 0, void 0, function*() {
@@ -606,8 +607,11 @@ const controlRecipes = function() {
             const id = window.location.hash.slice(1);
             if (!id) return;
             recipeView_1.default.renderSpinner();
+            console.log(1);
             // Update results view to mark selected search result
             resultView_1.default.update((0, model_1.getSearchResultsPage)(model_1.state.search.page));
+            // Updating bookmarks
+            bookmarksView_1.default.render(model_1.state.bookmarks);
             // 1) Loading data
             yield (0, model_1.loadRecipe)(id);
             if (!model_1.state.recipe) throw new Error("Id not found");
@@ -641,6 +645,26 @@ const controlSearchResults = function() {
         }
     });
 };
+const controlPopupList = function() {
+    const searchBar = document.querySelector(".search__field");
+    const dropdown = document.querySelector(".dropdown");
+    const searchBtn = document.querySelector(".search__btn");
+    // Show dropdown on focus
+    searchBar === null || searchBar === void 0 || searchBar.addEventListener("focus", ()=>{
+        dropdown.style.display = "block";
+    });
+    // Trigger search when user clicks on an item in the dropdown
+    dropdown === null || dropdown === void 0 || dropdown.addEventListener("click", (e)=>{
+        if (e.target.tagName === "LI") {
+            searchBar.value = e.target.textContent;
+            searchBtn.click();
+        }
+    });
+    // Hide dropdown when user clicks outside the search wrapper
+    document.addEventListener("click", (e)=>{
+        if (!(e === null || e === void 0 ? void 0 : e.target.closest(".search__wrapper"))) dropdown.style.display = "none";
+    });
+};
 const controlPagination = function(goToPage) {
     // Render NEW results
     resultView_1.default.render((0, model_1.getSearchResultsPage)(goToPage));
@@ -651,36 +675,29 @@ const controlServings = function(newServings) {
     // Update the recipe servings (in the state)
     (0, model_1.updateServings)(newServings);
     // Update the recipe view
-    // recipeView.render(state.recipe);
     recipeView_1.default.update(model_1.state.recipe);
 };
-const searchBar = document.querySelector(".search__field");
-const dropdown = document.querySelector(".dropdown");
-const searchBtn = document.querySelector(".search__btn");
-// Show dropdown on focus
-searchBar === null || searchBar === void 0 || searchBar.addEventListener("focus", ()=>{
-    dropdown.style.display = "block";
-});
-// Trigger search when user clicks on an item in the dropdown
-dropdown === null || dropdown === void 0 || dropdown.addEventListener("click", (e)=>{
-    if (e.target.tagName === "LI") {
-        searchBar.value = e.target.textContent;
-        searchBtn.click();
-    }
-});
-// Hide dropdown when user clicks outside the search wrapper
-document.addEventListener("click", (e)=>{
-    if (!(e === null || e === void 0 ? void 0 : e.target.closest(".search__wrapper"))) dropdown.style.display = "none";
-});
+const controlAddBookmark = function() {
+    // Add/remove bookmark
+    if (!model_1.state.recipe.bookmarked) (0, model_1.addBookmark)(model_1.state.recipe);
+    else (0, model_1.deleteBookmark)(model_1.state.recipe.id);
+    // Update recipe view
+    recipeView_1.default.update(model_1.state.recipe);
+    console.log(model_1.state.bookmarks);
+    // Render bookmarks
+    bookmarksView_1.default.render(model_1.state.bookmarks);
+};
 const init = function() {
     recipeView_1.default.addHandlerRender(controlRecipes);
     recipeView_1.default.addHandlerUpdateServings(controlServings);
+    recipeView_1.default.addHandlerUpdateBookmark(controlAddBookmark);
     searchView_1.default.addHandlerSearch(controlSearchResults);
     paginationView_1.default.addHandlerClick(controlPagination);
+    controlPopupList();
 };
 init();
 
-},{"31fbff4559b4c975":"7CRIE","ba6e9d06de779d55":"dXNgZ","7439d74db8fa8990":"Y4A21","c18462d8301541d2":"l60JC","b3107744d63c7c23":"9OQAM","19d111d1d31e7dc4":"f70O5","aa24829ad552d1c4":"6z7bi"}],"7CRIE":[function(require,module,exports) {
+},{"31fbff4559b4c975":"7CRIE","ba6e9d06de779d55":"dXNgZ","7439d74db8fa8990":"Y4A21","c18462d8301541d2":"l60JC","b3107744d63c7c23":"9OQAM","19d111d1d31e7dc4":"f70O5","aa24829ad552d1c4":"6z7bi","97c5dc988bb3434f":"4Lqzq"}],"7CRIE":[function(require,module,exports) {
 require("ca4c3b0d1be5b9c7");
 require("ddddaf1799cd05e0");
 require("c291de8cbf8a1f61");
@@ -16492,7 +16509,7 @@ var __awaiter = this && this.__awaiter || function(thisArg, _arguments, P, gener
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.updateServings = exports.getSearchResultsPage = exports.loadSearchResults = exports.loadRecipe = exports.state = void 0;
+exports.deleteBookmark = exports.addBookmark = exports.updateServings = exports.getSearchResultsPage = exports.loadSearchResults = exports.loadRecipe = exports.state = void 0;
 const helpers_1 = require("111d130c2903409c");
 const config_1 = require("b3edc9e0a51f0f5");
 exports.state = {
@@ -16502,12 +16519,14 @@ exports.state = {
         result: [],
         resultsPerPage: config_1.RES_PER_PAGE,
         page: 1
-    }
+    },
+    bookmarks: []
 };
 const loadRecipe = function(id) {
     return __awaiter(this, void 0, void 0, function*() {
         try {
             const data = yield (0, helpers_1.getJson)(`${config_1.API_URL}${id}`);
+            console.log(exports.state);
             if ("recipe" in data.data) {
                 const recipe = data.data.recipe;
                 exports.state.recipe = {
@@ -16521,6 +16540,8 @@ const loadRecipe = function(id) {
                     sourceUrl: recipe.source_url
                 };
             }
+            if (exports.state.bookmarks.some((bookmark)=>bookmark.id === id)) exports.state.recipe.bookmarked = true;
+            else exports.state.recipe.bookmarked = false;
         } catch (error) {
             exports.state.recipe = {};
             throw error;
@@ -16542,6 +16563,7 @@ const loadSearchResults = function(query) {
                     publisher: rec.publisher
                 };
             });
+            exports.state.search.page = 1;
         } catch (error) {
             console.log(`My erorr ${error}`);
             throw error;
@@ -16572,6 +16594,30 @@ const updateServings = function(newServings) {
     exports.state.recipe.servings = newServings;
 };
 exports.updateServings = updateServings;
+const persistBookmarks = function() {
+    localStorage.setItem("bookmarks", JSON.stringify(exports.state.bookmarks));
+};
+const addBookmark = function(recipe) {
+    // Add bookmark
+    exports.state.bookmarks.push(recipe);
+    // Mark current recipe as bookmark
+    if (recipe.id === exports.state.recipe.id) exports.state.recipe.bookmarked = true;
+    persistBookmarks();
+};
+exports.addBookmark = addBookmark;
+const deleteBookmark = function(id) {
+    const index = exports.state.bookmarks.findIndex((el)=>el.id === id);
+    exports.state.bookmarks.splice(index, 1);
+    if (id === exports.state.recipe.id) exports.state.recipe.bookmarked = false;
+    persistBookmarks();
+};
+exports.deleteBookmark = deleteBookmark;
+const init = function() {
+    const storage = localStorage.getItem("bookmarks");
+    if (storage) exports.state.bookmarks = JSON.parse(storage);
+};
+init();
+console.log(exports.state.bookmarks);
 
 },{"111d130c2903409c":"hGI1E","b3edc9e0a51f0f5":"k5Hzs"}],"hGI1E":[function(require,module,exports) {
 "use strict";
@@ -16675,9 +16721,16 @@ class RecipeView extends View_1.default {
     addHandlerUpdateServings(handler) {
         this.parentElement.addEventListener("click", function(e) {
             const btn = e.target.closest(".btn--update-servings");
-            const updateTo = +btn.dataset.updateTo;
             if (!btn) return;
+            const updateTo = +btn.dataset.updateTo;
             if (updateTo > 0) handler(updateTo);
+        });
+    }
+    addHandlerUpdateBookmark(handler) {
+        this.parentElement.addEventListener("click", (e)=>{
+            const btnBookmark = e.target.closest(".btn--bookmark");
+            if (!btnBookmark) return;
+            handler();
         });
     }
     generateMarkupIngredients(ingredient) {
@@ -16737,9 +16790,9 @@ class RecipeView extends View_1.default {
           <div class="recipe__user-generated">
             
           </div>
-          <button class="btn--round">
+          <button class="btn--round btn--bookmark">
             <svg class="">
-              <use href="${icons_svg_1.default}#icon-bookmark-fill"></use>
+              <use href="${icons_svg_1.default}#icon-bookmark${recipeInfo.bookmarked ? "-fill" : ""}"></use>
             </svg>
           </button>
         </div>
@@ -16925,23 +16978,29 @@ class View {
         this.defaultMessage = `Start by searching for a recipe or an ingredient. Have fun!`;
         this.data = {};
     }
-    render(data) {
+    render(data, render = true) {
         if (!data || Array.isArray(data) && data.length === 0) return this.renderError();
         this.data = data;
         const markup = this.generateMarkup();
+        if (!render) return markup;
         this.clear();
         this.parentElement.insertAdjacentHTML("beforeend", markup);
     }
     update(data) {
         // отримуємо масив рецептів
         this.data = data;
+        console.log(`data`);
+        console.log(data);
         const newMarkup = this.generateMarkup();
         const newDOM = document.createRange().createContextualFragment(newMarkup);
         const newElements = Array.from(newDOM.querySelectorAll("*"));
         const curElements = Array.from(this.parentElement.querySelectorAll("*"));
+        console.log(newElements);
+        console.log(curElements);
         newElements.forEach((newEl, i)=>{
             var _a, _b;
             const curEl = curElements[i];
+            if (!curEl) return;
             // Update changed Text
             if (!newEl.isEqualNode(curEl) && ((_b = (_a = newEl.firstChild) === null || _a === void 0 ? void 0 : _a.nodeValue) === null || _b === void 0 ? void 0 : _b.trim()) !== "") // console.log(curEl);
             // console.log(newEl.firstChild?.nodeValue);
@@ -17031,16 +17090,39 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 const View_1 = __importDefault(require("ad23b5387136473b"));
+const previewView_1 = __importDefault(require("e2fd31ae7641abca"));
 class ResultsView extends View_1.default {
     constructor(){
         super(...arguments);
         this.parentElement = document.querySelector(".results");
     }
     generateMarkup() {
-        return this.data.map(this.generateMarkupPreview).join("");
+        console.log("generatemarkup");
+        console.log(this.data);
+        return this.data.map((result)=>previewView_1.default.render(result, false)).join("");
     }
-    generateMarkupPreview(recipe) {
+}
+exports.default = new ResultsView();
+
+},{"ad23b5387136473b":"5cUXS","e2fd31ae7641abca":"1FDQ6"}],"1FDQ6":[function(require,module,exports) {
+"use strict";
+var __importDefault = this && this.__importDefault || function(mod) {
+    return mod && mod.__esModule ? mod : {
+        "default": mod
+    };
+};
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+const View_1 = __importDefault(require("8ff731af7b4be998"));
+class PreviewView extends View_1.default {
+    constructor(){
+        super(...arguments);
+        this.parentElement = "";
+    }
+    generateMarkup() {
         const id = window.location.hash.slice(1);
+        const recipe = this.data;
         return `
       <li class="preview">
         <a class="preview__link ${recipe.id === id ? "preview__link--active" : ""}" href="#${recipe.id}">
@@ -17056,9 +17138,9 @@ class ResultsView extends View_1.default {
       </li>`;
     }
 }
-exports.default = new ResultsView();
+exports.default = new PreviewView();
 
-},{"ad23b5387136473b":"5cUXS"}],"6z7bi":[function(require,module,exports) {
+},{"8ff731af7b4be998":"5cUXS"}],"6z7bi":[function(require,module,exports) {
 "use strict";
 var __importDefault = this && this.__importDefault || function(mod) {
     return mod && mod.__esModule ? mod : {
@@ -17125,6 +17207,32 @@ class PaginationView extends View_1.default {
 }
 exports.default = new PaginationView();
 
-},{"e7d0b51536015e35":"5cUXS","5b725db240e8b831":"loVOp"}]},["d8XZh","aenu9"], "aenu9", "parcelRequirea6cc")
+},{"e7d0b51536015e35":"5cUXS","5b725db240e8b831":"loVOp"}],"4Lqzq":[function(require,module,exports) {
+"use strict";
+var __importDefault = this && this.__importDefault || function(mod) {
+    return mod && mod.__esModule ? mod : {
+        "default": mod
+    };
+};
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+const View_1 = __importDefault(require("6f5928e8985e59e5"));
+const previewView_1 = __importDefault(require("4db36b106ee79fba"));
+class BookmarksView extends View_1.default {
+    constructor(){
+        super(...arguments);
+        this.parentElement = document.querySelector(".bookmarks__list");
+        this.errorMessage = "No bookmarks yet. Find a recipe and bookmark it.";
+    }
+    generateMarkup() {
+        console.log("generatemarkup");
+        console.log(this.data);
+        return this.data.map((bookMarks)=>previewView_1.default.render(bookMarks, false)).join("");
+    }
+}
+exports.default = new BookmarksView();
+
+},{"4db36b106ee79fba":"1FDQ6","6f5928e8985e59e5":"5cUXS"}]},["d8XZh","aenu9"], "aenu9", "parcelRequirea6cc")
 
 //# sourceMappingURL=index.e37f48ea.js.map

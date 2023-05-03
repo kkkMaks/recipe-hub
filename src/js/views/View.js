@@ -10,24 +10,32 @@ class View {
         this.defaultMessage = `Start by searching for a recipe or an ingredient. Have fun!`;
         this.data = {};
     }
-    render(data) {
+    render(data, render = true) {
         if (!data || (Array.isArray(data) && data.length === 0))
             return this.renderError();
         this.data = data;
         const markup = this.generateMarkup();
+        if (!render)
+            return markup;
         this.clear();
         this.parentElement.insertAdjacentHTML('beforeend', markup);
     }
     update(data) {
         // отримуємо масив рецептів
         this.data = data;
+        console.log(`data`);
+        console.log(data);
         const newMarkup = this.generateMarkup();
         const newDOM = document.createRange().createContextualFragment(newMarkup);
         const newElements = Array.from(newDOM.querySelectorAll('*'));
         const curElements = Array.from(this.parentElement.querySelectorAll('*'));
+        console.log(newElements);
+        console.log(curElements);
         newElements.forEach((newEl, i) => {
             var _a, _b;
             const curEl = curElements[i];
+            if (!curEl)
+                return;
             // Update changed Text
             if (!newEl.isEqualNode(curEl) &&
                 ((_b = (_a = newEl.firstChild) === null || _a === void 0 ? void 0 : _a.nodeValue) === null || _b === void 0 ? void 0 : _b.trim()) !== '') {

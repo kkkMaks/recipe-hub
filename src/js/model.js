@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateServings = exports.getSearchResultsPage = exports.loadSearchResults = exports.loadRecipe = exports.state = void 0;
+exports.deleteBookmark = exports.addBookmark = exports.updateServings = exports.getSearchResultsPage = exports.loadSearchResults = exports.loadRecipe = exports.state = void 0;
 const helpers_1 = require("./helpers");
 const config_1 = require("./config");
 exports.state = {
@@ -20,11 +20,13 @@ exports.state = {
         resultsPerPage: config_1.RES_PER_PAGE,
         page: 1,
     },
+    bookmarks: [],
 };
 const loadRecipe = function (id) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const data = (yield (0, helpers_1.getJson)(`${config_1.API_URL}${id}`));
+            console.log(exports.state);
             if ('recipe' in data.data) {
                 const recipe = data.data.recipe;
                 exports.state.recipe = {
@@ -37,6 +39,12 @@ const loadRecipe = function (id) {
                     servings: recipe.servings,
                     sourceUrl: recipe.source_url,
                 };
+            }
+            if (exports.state.bookmarks.some((bookmark) => bookmark.id === id)) {
+                exports.state.recipe.bookmarked = true;
+            }
+            else {
+                exports.state.recipe.bookmarked = false;
             }
         }
         catch (error) {
@@ -61,6 +69,7 @@ const loadSearchResults = function (query) {
                         publisher: rec.publisher,
                     };
                 });
+            exports.state.search.page = 1;
         }
         catch (error) {
             console.log(`My erorr ${error}`);
@@ -92,3 +101,32 @@ const updateServings = function (newServings) {
     exports.state.recipe.servings = newServings;
 };
 exports.updateServings = updateServings;
+const persistBookmarks = function () {
+    localStorage.setItem('bookmarks', JSON.stringify(exports.state.bookmarks));
+};
+const addBookmark = function (recipe) {
+    // Add bookmark
+    exports.state.bookmarks.push(recipe);
+    // Mark current recipe as bookmark
+    if (recipe.id === exports.state.recipe.id) {
+        exports.state.recipe.bookmarked = true;
+    }
+    persistBookmarks();
+};
+exports.addBookmark = addBookmark;
+const deleteBookmark = function (id) {
+    const index = exports.state.bookmarks.findIndex((el) => el.id === id);
+    exports.state.bookmarks.splice(index, 1);
+    if (id === exports.state.recipe.id) {
+        exports.state.recipe.bookmarked = false;
+    }
+    persistBookmarks();
+};
+exports.deleteBookmark = deleteBookmark;
+const init = function () {
+    const storage = localStorage.getItem('bookmarks');
+    if (storage)
+        exports.state.bookmarks = JSON.parse(storage);
+};
+init();
+console.log(exports.state.bookmarks);

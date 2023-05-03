@@ -2,7 +2,7 @@
 
 ## Table of Contents
 
-You can check my project here: [Recipe-Hub](https://recipe-hub-kkkmaks.netlify.app/)
+You can check my project here: [https://recipe-hub-kkkmaks.netlify.app](https://recipe-hub-kkkmaks.netlify.app/)
 
 You can find the table of contents below. It will help you navigate through the README file.
 

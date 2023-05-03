@@ -4,8 +4,11 @@ import View from './View';
 import previewView from './previewView';
 import { Recipe } from '../interfaces/interfases';
 
-class ResultsView extends View {
-  public parentElement = document.querySelector('.results') as HTMLElement;
+class BookmarksView extends View {
+  public parentElement = document.querySelector(
+    '.bookmarks__list'
+  ) as HTMLElement;
+  public errorMessage = 'No bookmarks yet. Find a recipe and bookmark it.';
 
   public generateMarkup(): string {
     console.log('generatemarkup');
@@ -13,9 +16,9 @@ class ResultsView extends View {
     console.log(this.data);
 
     return this.data
-      .map((result) => previewView.render(result, false))
+      .map((bookMarks) => previewView.render(bookMarks, false))
       .join('');
   }
 }
 
-export default new ResultsView();
+export default new BookmarksView();

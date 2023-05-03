@@ -10,12 +10,13 @@ export default abstract class View {
   protected abstract parentElement: HTMLElement;
   protected abstract generateMarkup(): string;
 
-  public render(data: Recipe[] | Recipe) {
+  public render(data: Recipe[] | Recipe, render = true) {
     if (!data || (Array.isArray(data) && data.length === 0))
       return this.renderError();
 
     this.data = data;
     const markup = this.generateMarkup();
+    if (!render) return markup;
     this.clear();
     this.parentElement.insertAdjacentHTML('beforeend', markup);
   }
@@ -23,6 +24,8 @@ export default abstract class View {
   public update(data: Recipe[] | Recipe) {
     // отримуємо масив рецептів
     this.data = data;
+    console.log(`data`);
+    console.log(data);
 
     const newMarkup = this.generateMarkup();
 
@@ -31,9 +34,13 @@ export default abstract class View {
     const newElements = Array.from(newDOM.querySelectorAll('*'));
     const curElements = Array.from(this.parentElement.querySelectorAll('*'));
 
+    console.log(newElements);
+    console.log(curElements);
+
     newElements.forEach((newEl, i) => {
       const curEl = curElements[i];
 
+      if (!curEl) return;
       // Update changed Text
       if (
         !newEl.isEqualNode(curEl) &&
