@@ -42,7 +42,7 @@
 
 @media (max-width: 840) {
   .search-results {
-    width: 35rem;
+    width: 32rem;
   }
 }
 
@@ -67,14 +67,14 @@
     }
   }
   .btn--inline {
-    width: 11rem;
-    height: 4rem;
+    width: 10rem;
+    height: 3.3rem;
     float: left;
   }
 
   .search-results {
     padding: 1rem 0;
-    width: 19rem;
+    width: 25rem;
   }
 
   .preview__link:visited {
@@ -82,5 +82,17 @@
   }
   .preview__fig {
     display: none;
+  }
+}
+@media (max-width: 520px) {
+  .search-results {
+    padding: 1rem 0;
+    width: 19rem;
+  }
+  .pagination {
+    padding: 0 26%;
+    &__btn--prev {
+      margin-bottom: 1rem;
+    }
   }
 }

@@ -17,7 +17,7 @@
   border-radius: 10rem;
   display: flex;
   align-items: center;
-  padding-left: 3rem;
+  padding-left: 1rem;
   transition: all 0.3s;
   z-index: 100;
 
@@ -67,7 +67,7 @@
     list-style: none;
     margin: 0;
     padding: 0;
-    background-color: #cf7979;
+    background-color: #4e6a8de8;
     position: absolute;
     top: 100%;
     left: 0;
@@ -79,9 +79,16 @@
     li {
       padding: 1rem;
       cursor: pointer;
+      transition: all 0.2s;
+      color: #fff;
+      font-family: inherit;
+
+      font-size: 1.4rem;
+      font-weight: 400;
 
       &:hover {
         background-color: #eee;
+        color: black;
       }
     }
   }
@@ -93,7 +100,7 @@
     border-radius: 10rem;
     border: none;
     font-size: 1.6rem;
-    background-color: #ff2d2d;
+    background-color: #cfcfcf;
     color: #fff;
     padding: 1rem 2rem;
     display: flex;
@@ -116,6 +123,7 @@
     list-style: none;
     display: flex;
     height: 100%;
+    margin-right: 2rem;
   }
 
   &__item {
