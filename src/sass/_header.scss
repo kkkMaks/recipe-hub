@@ -3,7 +3,6 @@
   background-color: $color-grey-light-1;
   display: flex;
   align-items: center;
-  justify-content: space-between;
 
   &__logo {
     margin-left: 4rem;
@@ -13,6 +12,7 @@
 }
 
 .search {
+  margin-left: 5%;
   background-color: #fff;
   border-radius: 10rem;
   display: flex;
@@ -37,7 +37,7 @@
     // color: inherit;
     // font-size: 1.7rem;
     // width: 30rem;
-    margin-right: -3rem;
+    margin-right: 4rem;
     border: none;
     background-color: #fff;
 
@@ -118,6 +118,7 @@
 .nav {
   align-self: stretch;
   margin-right: 2.5rem;
+  margin-left: auto;
 
   &__list {
     list-style: none;
@@ -209,8 +210,22 @@
   }
 }
 
+@media (max-width: 980px) {
+  .search__field {
+    margin-right: -1rem;
+  }
+}
 @media (max-width: 770px) {
+  .nav {
+    margin-right: 0.5rem;
+
+    &__btn {
+      padding: 0 0 0 1rem;
+    }
+  }
   .search {
+    margin-left: 1%;
+
     padding-left: 0rem;
     &__field {
       margin-right: -10rem;
@@ -249,19 +264,19 @@
   }
 }
 
-@media (max-width: 520px) {
+@media (max-width: 510px) {
   .nav {
     display: none;
   }
   .search {
-    margin-right: 2rem;
+    margin-left: 4rem;
   }
 }
 
 @media (max-width: 460px) {
   .search {
     height: 4rem;
-
+    margin-left: 2rem;
     &__btn {
       margin-left: 0;
       height: 3.5rem;

@@ -206,8 +206,17 @@
 
   p {
     margin-left: 1.5rem;
-    font-size: 1.8rem;
+    font-size: 2.8rem;
     line-height: 1.5;
     font-weight: 600;
+  }
+}
+
+@media (max-width: $bp-small) {
+  .message,
+  .error {
+    p {
+      font-size: 2.2rem;
+    }
   }
 }

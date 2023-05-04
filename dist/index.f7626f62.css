@@ -30,7 +30,7 @@ body {
 
 .container {
   max-width: 150rem;
-  min-height: 117rem;
+  min-height: 100vh;
   background-color: #fff;
   border-radius: 9px;
   grid-template: "head head" 10rem
@@ -244,15 +244,20 @@ body {
 
 .message p, .error p {
   margin-left: 1.5rem;
-  font-size: 1.8rem;
+  font-size: 2.8rem;
   font-weight: 600;
   line-height: 1.5;
+}
+
+@media (width <= 600px) {
+  .message p, .error p {
+    font-size: 2.2rem;
+  }
 }
 
 .header {
   background-color: #f9f5f3;
   grid-area: head;
-  justify-content: space-between;
   align-items: center;
   display: flex;
 }
@@ -268,6 +273,7 @@ body {
   background-color: #fff;
   border-radius: 10rem;
   align-items: center;
+  margin-left: 5%;
   padding-left: 1rem;
   transition: all .3s;
   display: flex;
@@ -287,7 +293,7 @@ body {
   background-color: #fff;
   border: none;
   border-radius: 10rem;
-  margin-right: -3rem;
+  margin-right: 4rem;
   padding: 1rem;
   font-size: 1.6rem;
 }
@@ -360,6 +366,7 @@ body {
 
 .nav {
   align-self: stretch;
+  margin-left: auto;
   margin-right: 2.5rem;
 }
 
@@ -447,8 +454,23 @@ body {
   }
 }
 
+@media (width <= 980px) {
+  .search__field {
+    margin-right: -1rem;
+  }
+}
+
 @media (width <= 770px) {
+  .nav {
+    margin-right: .5rem;
+  }
+
+  .nav__btn {
+    padding: 0 0 0 1rem;
+  }
+
   .search {
+    margin-left: 1%;
     padding-left: 0;
   }
 
@@ -488,19 +510,20 @@ body {
   }
 }
 
-@media (width <= 520px) {
+@media (width <= 510px) {
   .nav {
     display: none;
   }
 
   .search {
-    margin-right: 2rem;
+    margin-left: 4rem;
   }
 }
 
 @media (width <= 460px) {
   .search {
     height: 4rem;
+    margin-left: 2rem;
   }
 
   .search__btn {
