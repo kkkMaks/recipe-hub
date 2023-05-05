@@ -1032,10 +1032,15 @@ body {
   .recipe__title {
     font-size: 1.6rem;
   }
+
+  .recipe__title span {
+    padding: 1.1rem 2rem;
+  }
 }
 
 .add-recipe-window {
   width: 100rem;
+  height: 78vh;
   z-index: 1000;
   background-color: #fff;
   border-radius: 9px;
@@ -1079,9 +1084,11 @@ body {
 }
 
 .upload {
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem 6rem;
-  display: grid;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  justify-content: space-between;
+  display: flex;
 }
 
 .upload__column {
@@ -1132,6 +1139,19 @@ body {
 .upload__btn {
   grid-column: 1 / -1;
   justify-self: center;
+}
+
+@media (width <= 1250px) {
+  .add-recipe-window {
+    width: 86rem;
+  }
+}
+
+@media (width <= 980px) {
+  .add-recipe-window {
+    width: 70rem;
+    top: 43%;
+  }
 }
 
 /*# sourceMappingURL=index.f7626f62.css.map */

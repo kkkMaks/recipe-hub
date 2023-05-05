@@ -9,13 +9,15 @@ import {
   updateServings,
   addBookmark,
   deleteBookmark,
+  uploadRecipe,
 } from './model';
-import { Recipe } from './interfaces/interfases';
+import { Recipe, StateTemp } from './interfaces/interfases';
 import recipeView from './views/recipeView';
 import searchView from './views/searchView';
 import resultView from './views/resultView';
 import bookmarksView from './views/bookmarksView';
 import paginationView from './views/paginationView';
+import addRecipeView from './views/addRecipeView';
 
 const controlRecipes = async function () {
   try {
@@ -35,7 +37,7 @@ const controlRecipes = async function () {
     if (!state.recipe) throw new Error('Id not found');
 
     // 2) Rendering data
-    recipeView.render(state.recipe);
+    recipeView.render(state.recipe as Recipe);
   } catch (error: any) {
     recipeView.clear();
     recipeView.renderError(error);
@@ -62,14 +64,16 @@ const controlSearchResults = async function () {
     paginationView.render(state.search);
   } catch (error) {
     resultView.clear();
-    resultView.renderError(error as string);
+    resultView.renderError(error as string);https://forkify-api.herokuapp.com/api/v2/
   }
 };
 
 const controlPopupList = function () {
-  const searchBar = document.querySelector('.search__field');
-  const dropdown = document.querySelector('.dropdown');
-  const searchBtn = document.querySelector('.search__btn');
+  const searchBar = document.querySelector(
+    '.search__field'
+  ) as HTMLInputElement;
+  const dropdown = document.querySelector('.dropdown') as HTMLUListElement;
+  const searchBtn = document.querySelector('.search__btn') as HTMLButtonElement;
 
   // Show dropdown on focus
   searchBar?.addEventListener('focus', () => {
@@ -77,7 +81,7 @@ const controlPopupList = function () {
   });
 
   // Trigger search when user clicks on an item in the dropdown
-  dropdown?.addEventListener('click', (e) => {
+  dropdown?.addEventListener('click', (e: MouseEvent) => {
     if (e.target.tagName === 'LI') {
       searchBar.value = e.target.textContent;
       searchBtn.click();
@@ -100,17 +104,17 @@ const controlPagination = function (goToPage: number) {
   paginationView.render(state.search);
 };
 
-const controlServings = function (newServings) {
+const controlServings = function (newServings: number) {
   // Update the recipe servings (in the state)
   updateServings(newServings);
 
   // Update the recipe view
-  recipeView.update(state.recipe);
+  recipeView.update(state.recipe as Recipe);
 };
 
 const controlAddBookmark = function () {
   // Add/remove bookmark
-  if (!state.recipe.bookmarked) addBookmark(state.recipe);
+  if (!state.recipe.bookmarked) addBookmark(state.recipe as Recipe);
   else deleteBookmark(state.recipe.id);
 
   // Update recipe view
@@ -121,12 +125,41 @@ const controlAddBookmark = function () {
   bookmarksView.render(state.bookmarks);
 };
 
+const controlUploadRecipe = async function (newRecipe: Recipe) {
+  try {
+    addRecipeView.renderSpinner();
+    // Upload the new recipe data
+    await uploadRecipe(newRecipe);
+
+    // Render recipe
+    recipeView.render(state.recipe as Recipe);
+
+    // Render bookmark view
+    bookmarksView.render(state.bookmarks);
+
+    // Success message
+    addRecipeView.renderMessage('Recipe was successfully uploaded');
+
+    // Change ID in the URL
+    window.history.pushState(null, '', `#${state.recipe.id}`)
+
+    // Close form window
+    setTimeout(() => {
+      addRecipeView.toggleWindow();
+    }, 1500);
+  } catch (error) {
+    addRecipeView.renderError(error as string);
+  }
+};
+
 const init = function () {
   recipeView.addHandlerRender(controlRecipes);
   recipeView.addHandlerUpdateServings(controlServings);
   recipeView.addHandlerUpdateBookmark(controlAddBookmark);
   searchView.addHandlerSearch(controlSearchResults);
   paginationView.addHandlerClick(controlPagination);
+  addRecipeView.addHandlerUpload(controlUploadRecipe);
+
   controlPopupList();
 };
 init();

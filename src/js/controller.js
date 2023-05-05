@@ -20,6 +20,7 @@ const searchView_1 = __importDefault(require("./views/searchView"));
 const resultView_1 = __importDefault(require("./views/resultView"));
 const bookmarksView_1 = __importDefault(require("./views/bookmarksView"));
 const paginationView_1 = __importDefault(require("./views/paginationView"));
+const addRecipeView_1 = __importDefault(require("./views/addRecipeView"));
 const controlRecipes = function () {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -66,6 +67,7 @@ const controlSearchResults = function () {
         catch (error) {
             resultView_1.default.clear();
             resultView_1.default.renderError(error);
+            https: ; //forkify-api.herokuapp.com/api/v2/
         }
     });
 };
@@ -115,12 +117,37 @@ const controlAddBookmark = function () {
     // Render bookmarks
     bookmarksView_1.default.render(model_1.state.bookmarks);
 };
+const controlUploadRecipe = function (newRecipe) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            addRecipeView_1.default.renderSpinner();
+            // Upload the new recipe data
+            yield (0, model_1.uploadRecipe)(newRecipe);
+            // Render recipe
+            recipeView_1.default.render(model_1.state.recipe);
+            // Render bookmark view
+            bookmarksView_1.default.render(model_1.state.bookmarks);
+            // Success message
+            addRecipeView_1.default.renderMessage('Recipe was successfully uploaded');
+            // Change ID in the URL
+            window.history.pushState(null, '', `#${model_1.state.recipe.id}`);
+            // Close form window
+            setTimeout(() => {
+                addRecipeView_1.default.toggleWindow();
+            }, 1500);
+        }
+        catch (error) {
+            addRecipeView_1.default.renderError(error);
+        }
+    });
+};
 const init = function () {
     recipeView_1.default.addHandlerRender(controlRecipes);
     recipeView_1.default.addHandlerUpdateServings(controlServings);
     recipeView_1.default.addHandlerUpdateBookmark(controlAddBookmark);
     searchView_1.default.addHandlerSearch(controlSearchResults);
     paginationView_1.default.addHandlerClick(controlPagination);
+    addRecipeView_1.default.addHandlerUpload(controlUploadRecipe);
     controlPopupList();
 };
 init();

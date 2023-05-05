@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const icons_svg_1 = __importDefault(require("url:../../img/icons.svg"));
 const View_1 = __importDefault(require("./View"));
 class PreviewView extends View_1.default {
     constructor() {
@@ -21,7 +22,11 @@ class PreviewView extends View_1.default {
           <div class="preview__data">
             <h4 class="preview__title">${recipe.title}</h4>
             <p class="preview__publisher">${recipe.publisher}</p>
-            
+            <div class="preview__user-generated ${recipe.key ? '' : 'hidden'}">
+              <svg>
+                  <use href="${icons_svg_1.default}#icon-user"></use>
+              </svg>
+            </div>
           </div>
         </a>
       </li>`;

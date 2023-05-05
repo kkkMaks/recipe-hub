@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getJson = exports.timeout = void 0;
+exports.AJAX = exports.timeout = void 0;
 const config_1 = require("./config");
 const timeout = function (s) {
     return new Promise((_, reject) => {
@@ -19,13 +19,21 @@ const timeout = function (s) {
     });
 };
 exports.timeout = timeout;
-function getJson(url) {
+function AJAX(url, uploadData) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const res = (yield Promise.race([
-                fetch(url),
-                (0, exports.timeout)(config_1.TIMEOUT_SEC),
-            ]));
+            const fetchCall = uploadData
+                ? fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(uploadData),
+                })
+                : fetch(url);
+            console.log('AJAX');
+            console.log(fetchCall);
+            const res = yield Promise.race([fetchCall, (0, exports.timeout)(config_1.TIMEOUT_SEC)]);
             const data = yield res.json();
             if (!res.ok && data.status === 'fail') {
                 const errorMessage = data.message || 'An error occurred';
@@ -33,9 +41,9 @@ function getJson(url) {
             }
             return data;
         }
-        catch (err) {
-            throw err;
+        catch (error) {
+            throw error;
         }
     });
 }
-exports.getJson = getJson;
+exports.AJAX = AJAX;

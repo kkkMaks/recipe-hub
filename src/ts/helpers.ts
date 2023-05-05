@@ -9,20 +9,31 @@ export const timeout = function (s: number) {
   });
 };
 
-export async function getJson(url: string) {
+export async function AJAX(url: string, uploadData?: Recipe) {
   try {
-    const res: Response = (await Promise.race([
-      fetch(url),
-      timeout(TIMEOUT_SEC),
-    ])) as Response;
-    const data: ApiResponse = await res.json();
+    const fetchCall = uploadData
+      ? fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(uploadData),
+        })
+      : fetch(url);
+
+    console.log('AJAX');
+
+    console.log(fetchCall);
+
+    const res = await Promise.race([fetchCall, timeout(TIMEOUT_SEC)]);
+    const data = await res.json();
 
     if (!res.ok && data.status === 'fail') {
       const errorMessage = data.message || 'An error occurred';
       throw new Error(`${errorMessage} status: ${res.status}`);
     }
     return data;
-  } catch (err) {
-    throw err;
+  } catch (error) {
+    throw error;
   }
 }

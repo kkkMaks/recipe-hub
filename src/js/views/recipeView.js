@@ -89,7 +89,11 @@ class RecipeView extends View_1.default {
           </div>
 
           <div class="inner-container"> 
-            <div class="recipe__user-generated">
+            <div class="recipe__user-generated ${recipeInfo.key ? '' : 'hidden'}">
+              <svg>
+                  <use href="${icons_svg_1.default}#icon-user"></use>
+              </svg>
+                 
             </div>
             <button class="btn--round btn--bookmark">
               <svg class="">
