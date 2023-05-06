@@ -29,7 +29,7 @@ const createRecipeObject = function (data) {
 const loadRecipe = function (id) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const data = (yield (0, helpers_1.AJAX)(`${config_1.API_URL}${id}?key=${config_1.API_KEY}`));
+            const data = yield (0, helpers_1.AJAX)(`${config_1.API_URL}${id}?key=${config_1.API_KEY}`);
             exports.state.recipe = createRecipeObject(data);
             if (exports.state.bookmarks.some((bookmark) => bookmark.id === id)) {
                 exports.state.recipe.bookmarked = true;
@@ -58,7 +58,6 @@ const loadSearchResults = function (query) {
             exports.state.search.page = 1;
         }
         catch (error) {
-            console.log(`My erorr ${error}`);
             throw error;
         }
     });
@@ -67,15 +66,8 @@ exports.loadSearchResults = loadSearchResults;
 (0, exports.loadSearchResults)('https://forkify-api.herokuapp.com/api/v2/recipes?search=pizza');
 const getSearchResultsPage = function (page = 1) {
     exports.state.search.page = page;
-    // 38
-    // 0 - 12
-    // 12 - 24
-    // 24 - 36
-    // 36 - 48
     const start = (page - 1) * exports.state.search.resultsPerPage; // 0;
     const end = page * exports.state.search.resultsPerPage; // 9;
-    // console.log('getSearchResultsPage');
-    // console.log(state.search.result.slice(start, end));
     return exports.state.search.result.slice(start, end);
 };
 exports.getSearchResultsPage = getSearchResultsPage;
@@ -139,7 +131,6 @@ const uploadRecipe = function (newRecipe) {
             const data = yield (0, helpers_1.AJAX)(`${config_1.API_URL}?key=${config_1.API_KEY}`, recipe);
             exports.state.recipe = createRecipeObject(data);
             (0, exports.addBookmark)(exports.state.recipe);
-            console.log(ingredients);
         }
         catch (error) {
             throw error;

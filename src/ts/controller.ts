@@ -11,7 +11,7 @@ import {
   deleteBookmark,
   uploadRecipe,
 } from './model';
-import { Recipe, StateTemp } from './interfaces/interfases';
+import { Recipe } from './interfaces/interfases';
 import recipeView from './views/recipeView';
 import searchView from './views/searchView';
 import resultView from './views/resultView';
@@ -25,7 +25,6 @@ const controlRecipes = async function () {
 
     if (!id) return;
     recipeView.renderSpinner();
-    console.log(1);
     // Update results view to mark selected search result
     resultView.update(getSearchResultsPage(state.search.page));
     // Updating bookmarks
@@ -60,7 +59,6 @@ const controlSearchResults = async function () {
     resultView.render(getSearchResultsPage(currPage));
 
     // Render pagination buttons
-    console.log(state.search);
     paginationView.render(state.search);
   } catch (error) {
     resultView.clear();
@@ -82,15 +80,15 @@ const controlPopupList = function () {
 
   // Trigger search when user clicks on an item in the dropdown
   dropdown?.addEventListener('click', (e: MouseEvent) => {
-    if (e.target.tagName === 'LI') {
-      searchBar.value = e.target.textContent;
+    if (e.target instanceof Element && e.target.tagName === 'LI') {
+      searchBar.value = e.target.textContent ?? '';
       searchBtn.click();
     }
   });
 
   // Hide dropdown when user clicks outside the search wrapper
   document.addEventListener('click', (e) => {
-    if (!e?.target.closest('.search__wrapper')) {
+    if (!(e.target as Element).closest('.search__wrapper')) {
       dropdown.style.display = 'none';
     }
   });
@@ -119,7 +117,6 @@ const controlAddBookmark = function () {
 
   // Update recipe view
   recipeView.update(state.recipe);
-  console.log(state.bookmarks);
 
   // Render bookmarks
   bookmarksView.render(state.bookmarks);

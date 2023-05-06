@@ -2,7 +2,7 @@ import icons from 'url:../../img/icons.svg';
 import View from './View';
 
 class AddRecipeView extends View {
-  public parentElement = document.querySelector('.upload') as HTMLDivElement;
+  public parentElement = document.querySelector('.upload') as HTMLFormElement;
 
   private overlay = document.querySelector('.overlay') as HTMLDivElement;
   private window = document.querySelector(
@@ -98,6 +98,9 @@ class AddRecipeView extends View {
     this.clear();
     this.parentElement.insertAdjacentHTML('afterbegin', markup);
   }
+  protected generateMarkup(): string {
+    return '';
+  }
 
   toggleWindow() {
     this.window.classList.toggle('hidden');
@@ -115,14 +118,12 @@ class AddRecipeView extends View {
   }
 
   addHandlerUpload(handler: (data: FormData) => void) {
-    this.parentElement.addEventListener('submit', function (e) {
+    const form = this.parentElement;
+
+    form.addEventListener('submit', function (e: SubmitEvent) {
       e.preventDefault();
-      const dataArr = [...new FormData(this)];
-      const data = Object.fromEntries(dataArr);
-      console.log('this');
-      console.log(this);
-      console.log('data');
-      console.log(data);
+      const formData = [...new FormData(this)];
+      const data = Object.fromEntries(formData);
 
       handler(data);
     });

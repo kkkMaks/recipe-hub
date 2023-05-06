@@ -31,9 +31,10 @@ function AJAX(url, uploadData) {
                     body: JSON.stringify(uploadData),
                 })
                 : fetch(url);
-            console.log('AJAX');
-            console.log(fetchCall);
-            const res = yield Promise.race([fetchCall, (0, exports.timeout)(config_1.TIMEOUT_SEC)]);
+            const res = (yield Promise.race([
+                fetchCall,
+                (0, exports.timeout)(config_1.TIMEOUT_SEC),
+            ]));
             const data = yield res.json();
             if (!res.ok && data.status === 'fail') {
                 const errorMessage = data.message || 'An error occurred';

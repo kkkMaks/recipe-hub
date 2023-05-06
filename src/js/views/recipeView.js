@@ -21,9 +21,9 @@ class RecipeView extends View_1.default {
             const btn = e.target.closest('.btn--update-servings');
             if (!btn)
                 return;
-            const updateTo = +btn.dataset.updateTo;
-            if (updateTo > 0)
-                handler(updateTo);
+            const updateTo = btn.dataset.updateTo;
+            if (updateTo !== undefined && +updateTo > 0)
+                handler(+updateTo);
         });
     }
     addHandlerUpdateBookmark(handler) {
@@ -50,7 +50,6 @@ class RecipeView extends View_1.default {
     }
     generateMarkup() {
         const recipeInfo = this.data;
-        // console.log(recipeInfo);
         return `
         <figure class="recipe__fig">
           <img src="${recipeInfo.image}" alt="Tomato" class="recipe__img" />

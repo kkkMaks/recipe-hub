@@ -38,14 +38,16 @@ class PaginationView extends View_1.default {
             const btn = e.target.closest('.btn--inline');
             if (!btn)
                 return;
-            const goToPage = +btn.dataset.goto;
-            handler(goToPage);
+            const goToPage = btn.dataset.goto;
+            if (goToPage !== undefined) {
+                handler(+goToPage);
+            }
         });
     }
     generateMarkup() {
-        this.currPage = this.data.page;
-        // console.log(this.currPage);
-        const numPages = Math.ceil(this.data.result.length / this.data.resultsPerPage);
+        const paginationData = this.data;
+        this.currPage = paginationData.page;
+        const numPages = Math.ceil(paginationData.result.length / paginationData.resultsPerPage);
         // Page 1 and there are other pages
         if (this.currPage === 1 && numPages > 1) {
             return this.generateNextButton();

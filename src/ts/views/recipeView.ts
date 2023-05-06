@@ -14,18 +14,20 @@ class RecipeView extends View {
     });
   }
 
-  public addHandlerUpdateServings(handler: VoidFunction) {
-    this.parentElement.addEventListener('click', function (e) {
-      const btn = e.target.closest('.btn--update-servings');
+  public addHandlerUpdateServings(handler: (updateTo: number) => void) {
+    this.parentElement.addEventListener('click', function (e: MouseEvent) {
+      const btn = (e.target as HTMLElement).closest(
+        '.btn--update-servings'
+      ) as HTMLButtonElement;
       if (!btn) return;
-      const updateTo = +btn.dataset.updateTo;
-      if (updateTo > 0) handler(updateTo);
+      const updateTo = btn.dataset.updateTo;
+      if (updateTo !== undefined && +updateTo > 0) handler(+updateTo);
     });
   }
 
   public addHandlerUpdateBookmark(handler: VoidFunction) {
     this.parentElement.addEventListener('click', (e) => {
-      const btnBookmark = e.target.closest('.btn--bookmark');
+      const btnBookmark = (e.target as Element).closest('.btn--bookmark');
       if (!btnBookmark) return;
       handler();
     });
@@ -50,7 +52,6 @@ class RecipeView extends View {
 
   public generateMarkup() {
     const recipeInfo: Recipe = this.data as Recipe;
-    // console.log(recipeInfo);
 
     return `
         <figure class="recipe__fig">
@@ -81,14 +82,14 @@ class RecipeView extends View {
 
             <div class="recipe__info-buttons">
               <button class="btn--tiny btn--update-servings" data-update-to=${
-                recipeInfo.servings - 1
+                (recipeInfo.servings as number) - 1
               } >
                 <svg>
                   <use href="${icons}#icon-minus-circle"></use>
                 </svg>
               </button>
               <button class="btn--tiny btn--update-servings" data-update-to=${
-                recipeInfo.servings + 1
+                (recipeInfo.servings as number) + 1
               }>
                 <svg>
                   <use href="${icons}#icon-plus-circle"></use>

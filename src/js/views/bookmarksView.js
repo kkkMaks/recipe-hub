@@ -12,9 +12,8 @@ class BookmarksView extends View_1.default {
         this.errorMessage = 'No bookmarks yet. Find a recipe and bookmark it.';
     }
     generateMarkup() {
-        console.log('generatemarkup');
-        console.log(this.data);
-        return this.data
+        const bookmarkData = this.data;
+        return bookmarkData
             .map((bookMarks) => previewView_1.default.render(bookMarks, false))
             .join('');
     }

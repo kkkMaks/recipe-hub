@@ -3,12 +3,39 @@ interface SearchRecipe {
   image_url: string;
   publisher: string;
   title: string;
+  key?: string;
 }
+
+export interface State {
+  recipe: Recipe | {};
+  search: {
+    query: string;
+    result: Recipe[];
+    resultsPerPage: number;
+    page: number;
+  };
+  bookmarks?: Recipe[];
+}
+
+// StateTemp
 
 export interface Ingredients {
   quantity: number;
   unit: string;
   description: string;
+}
+
+export interface Recipe {
+  id: string;
+  image: string;
+  title: string;
+  cookingTime?: number;
+  ingredients?: Ingredients[];
+  publisher: string;
+  servings?: number;
+  sourceUrl?: string;
+  bookmarked?: boolean;
+  key?: string;
 }
 
 export interface ResponseSearchRecipe {
@@ -31,18 +58,9 @@ export interface ResponseDetailsRecipe {
       servings: number;
       source_url: string;
       title: string;
+      key?: string;
     };
   };
-}
-export interface StateTemp {
-  recipe: Recipe | {};
-  search: {
-    query: string;
-    result: Recipe[];
-    resultsPerPage: number;
-    page: number;
-  };
-  bookmarks: Recipe[];
 }
 
 export interface SuccessResponse {
@@ -57,27 +75,3 @@ export interface FailResponse {
 }
 
 export type ApiResponse = FailResponse | SuccessResponse;
-
-////
-
-export interface Recipe {
-  id: string;
-  image: string;
-  title: string;
-  cookingTime?: number;
-  ingredients?: Ingredients[];
-  publisher: string;
-  servings?: number;
-  sourceUrl?: string;
-  bookmarked?: boolean;
-}
-
-export interface State {
-  recipe: Recipe | {};
-  search: {
-    query: string;
-    result: Recipe[];
-    resultsPerPage: number;
-    page: number;
-  };
-}

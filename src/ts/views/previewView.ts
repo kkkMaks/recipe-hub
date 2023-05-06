@@ -4,7 +4,7 @@ import View from './View';
 import { Recipe } from '../interfaces/interfases';
 
 class PreviewView extends View {
-  public parentElement = '';
+  public parentElement: HTMLElement = document.createElement('div');
 
   public generateMarkup() {
     const id = window.location.hash.slice(1);

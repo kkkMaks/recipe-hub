@@ -28,7 +28,6 @@ const controlRecipes = function () {
             if (!id)
                 return;
             recipeView_1.default.renderSpinner();
-            console.log(1);
             // Update results view to mark selected search result
             resultView_1.default.update((0, model_1.getSearchResultsPage)(model_1.state.search.page));
             // Updating bookmarks
@@ -61,7 +60,6 @@ const controlSearchResults = function () {
             // Render results
             resultView_1.default.render((0, model_1.getSearchResultsPage)(currPage));
             // Render pagination buttons
-            console.log(model_1.state.search);
             paginationView_1.default.render(model_1.state.search);
         }
         catch (error) {
@@ -81,14 +79,15 @@ const controlPopupList = function () {
     });
     // Trigger search when user clicks on an item in the dropdown
     dropdown === null || dropdown === void 0 ? void 0 : dropdown.addEventListener('click', (e) => {
-        if (e.target.tagName === 'LI') {
-            searchBar.value = e.target.textContent;
+        var _a;
+        if (e.target instanceof Element && e.target.tagName === 'LI') {
+            searchBar.value = (_a = e.target.textContent) !== null && _a !== void 0 ? _a : '';
             searchBtn.click();
         }
     });
     // Hide dropdown when user clicks outside the search wrapper
     document.addEventListener('click', (e) => {
-        if (!(e === null || e === void 0 ? void 0 : e.target.closest('.search__wrapper'))) {
+        if (!e.target.closest('.search__wrapper')) {
             dropdown.style.display = 'none';
         }
     });
@@ -113,7 +112,6 @@ const controlAddBookmark = function () {
         (0, model_1.deleteBookmark)(model_1.state.recipe.id);
     // Update recipe view
     recipeView_1.default.update(model_1.state.recipe);
-    console.log(model_1.state.bookmarks);
     // Render bookmarks
     bookmarksView_1.default.render(model_1.state.bookmarks);
 };

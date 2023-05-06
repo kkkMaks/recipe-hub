@@ -6,7 +6,7 @@ export default abstract class View {
   protected errorMessage = 'No recipes found for your query! Please try again';
   protected defaultMessage = `Start by searching for a recipe or an ingredient. Have fun!`;
 
-  protected data: Recipe | Recipe[] = {} as Recipe;
+  protected data: Recipe | Recipe[] | State['search'] = {} as Recipe;
   protected abstract parentElement: HTMLElement;
   protected abstract generateMarkup(): string;
 
@@ -22,10 +22,7 @@ export default abstract class View {
   }
 
   public update(data: Recipe[] | Recipe) {
-    // отримуємо масив рецептів
     this.data = data;
-    console.log(`data`);
-    console.log(data);
 
     const newMarkup = this.generateMarkup();
 
@@ -33,9 +30,6 @@ export default abstract class View {
 
     const newElements = Array.from(newDOM.querySelectorAll('*'));
     const curElements = Array.from(this.parentElement.querySelectorAll('*'));
-
-    console.log(newElements);
-    console.log(curElements);
 
     newElements.forEach((newEl, i) => {
       const curEl = curElements[i];
@@ -46,9 +40,6 @@ export default abstract class View {
         !newEl.isEqualNode(curEl) &&
         newEl.firstChild?.nodeValue?.trim() !== ''
       ) {
-        // console.log(curEl);
-        // console.log(newEl.firstChild?.nodeValue);
-
         curEl.textContent = newEl.textContent;
       }
 

@@ -8,11 +8,8 @@ class ResultsView extends View {
   public parentElement = document.querySelector('.results') as HTMLElement;
 
   public generateMarkup(): string {
-    console.log('generatemarkup');
-
-    console.log(this.data);
-
-    return this.data
+    const paginationObj: Recipe[] = this.data as Recipe[];
+    return paginationObj
       .map((result) => previewView.render(result, false))
       .join('');
   }

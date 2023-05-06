@@ -8,7 +8,7 @@ const View_1 = __importDefault(require("./View"));
 class PreviewView extends View_1.default {
     constructor() {
         super(...arguments);
-        this.parentElement = '';
+        this.parentElement = document.createElement('div');
     }
     generateMarkup() {
         const id = window.location.hash.slice(1);

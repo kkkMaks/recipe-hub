@@ -1,5 +1,6 @@
 import icons from 'url:../../img/icons.svg';
 import View from './View';
+import { State } from '../interfaces/interfases';
 
 class PaginationView extends View {
   public parentElement = document.querySelector(
@@ -35,24 +36,28 @@ class PaginationView extends View {
     return markup;
   }
 
-  public addHandlerClick(handler) {
-    this.parentElement.addEventListener('click', function (e) {
-      const btn = e.target.closest('.btn--inline');
+  public addHandlerClick(handler: (goToPage: number) => void) {
+    this.parentElement.addEventListener('click', function (e: MouseEvent) {
+      const btn = (e.target as Element).closest(
+        '.btn--inline'
+      ) as HTMLButtonElement;
 
       if (!btn) return;
 
-      const goToPage = +btn.dataset.goto;
-
-      handler(goToPage);
+      const goToPage = btn.dataset.goto;
+      if (goToPage !== undefined) {
+        handler(+goToPage);
+      }
     });
   }
 
   public generateMarkup() {
-    this.currPage = this.data.page;
-    // console.log(this.currPage);
+    const paginationData = this.data as State['search'];
+
+    this.currPage = paginationData.page;
 
     const numPages = Math.ceil(
-      this.data.result.length / this.data.resultsPerPage
+      paginationData.result.length / paginationData.resultsPerPage
     );
 
     // Page 1 and there are other pages

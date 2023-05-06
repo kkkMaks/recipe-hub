@@ -608,7 +608,6 @@ const controlRecipes = function() {
             const id = window.location.hash.slice(1);
             if (!id) return;
             recipeView_1.default.renderSpinner();
-            console.log(1);
             // Update results view to mark selected search result
             resultView_1.default.update((0, model_1.getSearchResultsPage)(model_1.state.search.page));
             // Updating bookmarks
@@ -638,7 +637,6 @@ const controlSearchResults = function() {
             // Render results
             resultView_1.default.render((0, model_1.getSearchResultsPage)(currPage));
             // Render pagination buttons
-            console.log(model_1.state.search);
             paginationView_1.default.render(model_1.state.search);
         } catch (error) {
             resultView_1.default.clear();
@@ -656,14 +654,15 @@ const controlPopupList = function() {
     });
     // Trigger search when user clicks on an item in the dropdown
     dropdown === null || dropdown === void 0 || dropdown.addEventListener("click", (e)=>{
-        if (e.target.tagName === "LI") {
-            searchBar.value = e.target.textContent;
+        var _a;
+        if (e.target instanceof Element && e.target.tagName === "LI") {
+            searchBar.value = (_a = e.target.textContent) !== null && _a !== void 0 ? _a : "";
             searchBtn.click();
         }
     });
     // Hide dropdown when user clicks outside the search wrapper
     document.addEventListener("click", (e)=>{
-        if (!(e === null || e === void 0 ? void 0 : e.target.closest(".search__wrapper"))) dropdown.style.display = "none";
+        if (!e.target.closest(".search__wrapper")) dropdown.style.display = "none";
     });
 };
 const controlPagination = function(goToPage) {
@@ -684,7 +683,6 @@ const controlAddBookmark = function() {
     else (0, model_1.deleteBookmark)(model_1.state.recipe.id);
     // Update recipe view
     recipeView_1.default.update(model_1.state.recipe);
-    console.log(model_1.state.bookmarks);
     // Render bookmarks
     bookmarksView_1.default.render(model_1.state.bookmarks);
 };
@@ -16594,7 +16592,6 @@ const loadSearchResults = function(query) {
             });
             exports.state.search.page = 1;
         } catch (error) {
-            console.log(`My erorr ${error}`);
             throw error;
         }
     });
@@ -16603,15 +16600,8 @@ exports.loadSearchResults = loadSearchResults;
 (0, exports.loadSearchResults)("https://forkify-api.herokuapp.com/api/v2/recipes?search=pizza");
 const getSearchResultsPage = function(page = 1) {
     exports.state.search.page = page;
-    // 38
-    // 0 - 12
-    // 12 - 24
-    // 24 - 36
-    // 36 - 48
     const start = (page - 1) * exports.state.search.resultsPerPage; // 0;
     const end = page * exports.state.search.resultsPerPage; // 9;
-    // console.log('getSearchResultsPage');
-    // console.log(state.search.result.slice(start, end));
     return exports.state.search.result.slice(start, end);
 };
 exports.getSearchResultsPage = getSearchResultsPage;
@@ -16671,7 +16661,6 @@ const uploadRecipe = function(newRecipe) {
             const data = yield (0, helpers_1.AJAX)(`${config_1.API_URL}?key=${config_1.API_KEY}`, recipe);
             exports.state.recipe = createRecipeObject(data);
             (0, exports.addBookmark)(exports.state.recipe);
-            console.log(ingredients);
         } catch (error) {
             throw error;
         }
@@ -16731,8 +16720,6 @@ function AJAX(url, uploadData) {
                 },
                 body: JSON.stringify(uploadData)
             }) : fetch(url);
-            console.log("AJAX");
-            console.log(fetchCall);
             const res = yield Promise.race([
                 fetchCall,
                 (0, exports.timeout)(config_1.TIMEOUT_SEC)
@@ -16791,8 +16778,8 @@ class RecipeView extends View_1.default {
         this.parentElement.addEventListener("click", function(e) {
             const btn = e.target.closest(".btn--update-servings");
             if (!btn) return;
-            const updateTo = +btn.dataset.updateTo;
-            if (updateTo > 0) handler(updateTo);
+            const updateTo = btn.dataset.updateTo;
+            if (updateTo !== undefined && +updateTo > 0) handler(+updateTo);
         });
     }
     addHandlerUpdateBookmark(handler) {
@@ -16818,7 +16805,6 @@ class RecipeView extends View_1.default {
     }
     generateMarkup() {
         const recipeInfo = this.data;
-        // console.log(recipeInfo);
         return `
         <figure class="recipe__fig">
           <img src="${recipeInfo.image}" alt="Tomato" class="recipe__img" />
@@ -17063,24 +17049,17 @@ class View {
         this.parentElement.insertAdjacentHTML("beforeend", markup);
     }
     update(data) {
-        // отримуємо масив рецептів
         this.data = data;
-        console.log(`data`);
-        console.log(data);
         const newMarkup = this.generateMarkup();
         const newDOM = document.createRange().createContextualFragment(newMarkup);
         const newElements = Array.from(newDOM.querySelectorAll("*"));
         const curElements = Array.from(this.parentElement.querySelectorAll("*"));
-        console.log(newElements);
-        console.log(curElements);
         newElements.forEach((newEl, i)=>{
             var _a, _b;
             const curEl = curElements[i];
             if (!curEl) return;
             // Update changed Text
-            if (!newEl.isEqualNode(curEl) && ((_b = (_a = newEl.firstChild) === null || _a === void 0 ? void 0 : _a.nodeValue) === null || _b === void 0 ? void 0 : _b.trim()) !== "") // console.log(curEl);
-            // console.log(newEl.firstChild?.nodeValue);
-            curEl.textContent = newEl.textContent;
+            if (!newEl.isEqualNode(curEl) && ((_b = (_a = newEl.firstChild) === null || _a === void 0 ? void 0 : _a.nodeValue) === null || _b === void 0 ? void 0 : _b.trim()) !== "") curEl.textContent = newEl.textContent;
             // Update changed attributes
             if (!newEl.isEqualNode(curEl)) Array.from(newEl.attributes).forEach((attr)=>curEl.setAttribute(attr.name, attr.value));
         });
@@ -17173,9 +17152,8 @@ class ResultsView extends View_1.default {
         this.parentElement = document.querySelector(".results");
     }
     generateMarkup() {
-        console.log("generatemarkup");
-        console.log(this.data);
-        return this.data.map((result)=>previewView_1.default.render(result, false)).join("");
+        const paginationObj = this.data;
+        return paginationObj.map((result)=>previewView_1.default.render(result, false)).join("");
     }
 }
 exports.default = new ResultsView();
@@ -17195,7 +17173,7 @@ const View_1 = __importDefault(require("8ff731af7b4be998"));
 class PreviewView extends View_1.default {
     constructor(){
         super(...arguments);
-        this.parentElement = "";
+        this.parentElement = document.createElement("div");
     }
     generateMarkup() {
         const id = window.location.hash.slice(1);
@@ -17265,14 +17243,14 @@ class PaginationView extends View_1.default {
         this.parentElement.addEventListener("click", function(e) {
             const btn = e.target.closest(".btn--inline");
             if (!btn) return;
-            const goToPage = +btn.dataset.goto;
-            handler(goToPage);
+            const goToPage = btn.dataset.goto;
+            if (goToPage !== undefined) handler(+goToPage);
         });
     }
     generateMarkup() {
-        this.currPage = this.data.page;
-        // console.log(this.currPage);
-        const numPages = Math.ceil(this.data.result.length / this.data.resultsPerPage);
+        const paginationData = this.data;
+        this.currPage = paginationData.page;
+        const numPages = Math.ceil(paginationData.result.length / paginationData.resultsPerPage);
         // Page 1 and there are other pages
         if (this.currPage === 1 && numPages > 1) return this.generateNextButton();
         // Last page
@@ -17307,9 +17285,8 @@ class BookmarksView extends View_1.default {
         this.errorMessage = "No bookmarks yet. Find a recipe and bookmark it.";
     }
     generateMarkup() {
-        console.log("generatemarkup");
-        console.log(this.data);
-        return this.data.map((bookMarks)=>previewView_1.default.render(bookMarks, false)).join("");
+        const bookmarkData = this.data;
+        return bookmarkData.map((bookMarks)=>previewView_1.default.render(bookMarks, false)).join("");
     }
 }
 exports.default = new BookmarksView();
@@ -17412,6 +17389,9 @@ class AddRecipeView extends View_1.default {
         this.clear();
         this.parentElement.insertAdjacentHTML("afterbegin", markup);
     }
+    generateMarkup() {
+        return "";
+    }
     toggleWindow() {
         this.window.classList.toggle("hidden");
         this.overlay.classList.toggle("hidden");
@@ -17425,16 +17405,13 @@ class AddRecipeView extends View_1.default {
         this.overlay.addEventListener("click", this.toggleWindow.bind(this));
     }
     addHandlerUpload(handler) {
-        this.parentElement.addEventListener("submit", function(e) {
+        const form = this.parentElement;
+        form.addEventListener("submit", function(e) {
             e.preventDefault();
-            const dataArr = [
+            const formData = [
                 ...new FormData(this)
             ];
-            const data = Object.fromEntries(dataArr);
-            console.log("this");
-            console.log(this);
-            console.log("data");
-            console.log(data);
+            const data = Object.fromEntries(formData);
             handler(data);
         });
     }

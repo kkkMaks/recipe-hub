@@ -91,6 +91,9 @@ class AddRecipeView extends View_1.default {
         this.clear();
         this.parentElement.insertAdjacentHTML('afterbegin', markup);
     }
+    generateMarkup() {
+        return '';
+    }
     toggleWindow() {
         this.window.classList.toggle('hidden');
         this.overlay.classList.toggle('hidden');
@@ -104,14 +107,11 @@ class AddRecipeView extends View_1.default {
         this.overlay.addEventListener('click', this.toggleWindow.bind(this));
     }
     addHandlerUpload(handler) {
-        this.parentElement.addEventListener('submit', function (e) {
+        const form = this.parentElement;
+        form.addEventListener('submit', function (e) {
             e.preventDefault();
-            const dataArr = [...new FormData(this)];
-            const data = Object.fromEntries(dataArr);
-            console.log('this');
-            console.log(this);
-            console.log('data');
-            console.log(data);
+            const formData = [...new FormData(this)];
+            const data = Object.fromEntries(formData);
             handler(data);
         });
     }

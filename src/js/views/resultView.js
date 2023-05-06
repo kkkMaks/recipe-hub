@@ -11,9 +11,8 @@ class ResultsView extends View_1.default {
         this.parentElement = document.querySelector('.results');
     }
     generateMarkup() {
-        console.log('generatemarkup');
-        console.log(this.data);
-        return this.data
+        const paginationObj = this.data;
+        return paginationObj
             .map((result) => previewView_1.default.render(result, false))
             .join('');
     }

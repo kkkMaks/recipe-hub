@@ -1,13 +1,14 @@
 import { AJAX } from './helpers';
 import { API_URL, RES_PER_PAGE, API_KEY } from './config';
 import {
-  StateTemp,
+  State,
   ApiResponse,
   SuccessResponse,
   Recipe,
+  ResponseDetailsRecipe,
 } from './interfaces/interfases';
 
-export const state: StateTemp = {
+export const state: State = {
   recipe: {},
   search: {
     query: '',
@@ -18,7 +19,7 @@ export const state: StateTemp = {
   bookmarks: [],
 };
 
-const createRecipeObject = function (data) {
+const createRecipeObject = function (data: ResponseDetailsRecipe) {
   const { recipe } = data.data;
   return {
     id: recipe.id,
@@ -35,11 +36,11 @@ const createRecipeObject = function (data) {
 
 export const loadRecipe = async function (id: string) {
   try {
-    const data: ApiResponse = (await AJAX(
+    const data: ResponseDetailsRecipe = await AJAX(
       `${API_URL}${id}?key=${API_KEY}`
-    )) as SuccessResponse;
+    );
 
-    state.recipe = createRecipeObject(data);
+    state.recipe = createRecipeObject(data) as Recipe;
 
     if (state.bookmarks.some((bookmark) => bookmark.id === id)) {
       state.recipe.bookmarked = true;
@@ -73,8 +74,6 @@ export const loadSearchResults = async function (query: string) {
       });
     state.search.page = 1;
   } catch (error) {
-    console.log(`My erorr ${error}`);
-
     throw error;
   }
 };
@@ -84,19 +83,12 @@ loadSearchResults(
 
 export const getSearchResultsPage = function (page: number = 1) {
   state.search.page = page;
-  // 38
-  // 0 - 12
-  // 12 - 24
-  // 24 - 36
-  // 36 - 48
   const start = (page - 1) * state.search.resultsPerPage; // 0;
   const end = page * state.search.resultsPerPage; // 9;
-  // console.log('getSearchResultsPage');
-  // console.log(state.search.result.slice(start, end));
   return state.search.result.slice(start, end);
 };
 
-export const updateServings = function (newServings) {
+export const updateServings = function (newServings: number) {
   const coefficient = newServings / state.recipe.servings;
   state.recipe.ingredients.forEach((ingredient) => {
     ingredient.quantity = ingredient.quantity * coefficient;
@@ -138,8 +130,11 @@ init();
 export const uploadRecipe = async function (newRecipe: Recipe) {
   try {
     const ingredients = Object.entries(newRecipe)
-      .filter((entry) => entry[0].startsWith('ingredient') && entry[1] !== '')
-      .map((ingredient) => {
+      .filter(
+        (entry: string[]) =>
+          entry[0].startsWith('ingredient') && entry[1] !== ''
+      )
+      .map((ingredient: string[]) => {
         const ingArr = ingredient[1].split(',').map((el) => el.trim());
         if (ingArr.length !== 3)
           throw new Error(
@@ -161,8 +156,6 @@ export const uploadRecipe = async function (newRecipe: Recipe) {
     const data = await AJAX(`${API_URL}?key=${API_KEY}`, recipe);
     state.recipe = createRecipeObject(data);
     addBookmark(state.recipe);
-
-    console.log(ingredients);
   } catch (error) {
     throw error;
   }

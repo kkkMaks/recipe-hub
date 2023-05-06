@@ -21,11 +21,10 @@ export async function AJAX(url: string, uploadData?: Recipe) {
         })
       : fetch(url);
 
-    console.log('AJAX');
-
-    console.log(fetchCall);
-
-    const res = await Promise.race([fetchCall, timeout(TIMEOUT_SEC)]);
+    const res: Response = (await Promise.race([
+      fetchCall,
+      timeout(TIMEOUT_SEC),
+    ])) as Response;
     const data = await res.json();
 
     if (!res.ok && data.status === 'fail') {
