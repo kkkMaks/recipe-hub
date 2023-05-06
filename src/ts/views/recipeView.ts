@@ -99,9 +99,9 @@ class RecipeView extends View {
           </div>
 
           <div class="inner-container"> 
-            <div class="recipe__user-generated ${
-              recipeInfo.key ? '' : 'hidden'
-            }">
+            <div class="recipe__user-generated" ${
+              recipeInfo.key ? '' : 'style="display: none;"'
+            }>
               <svg>
                   <use href="${icons}#icon-user"></use>
               </svg>

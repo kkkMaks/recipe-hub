@@ -87,6 +87,7 @@
   ///////////
   // DETAILS
   &__details {
+    justify-content: space-around;
     width: 100%;
     display: flex;
     flex-direction: row;
@@ -245,6 +246,7 @@
     &__fig {
       height: 28rem;
     }
+
     &__title {
       font-size: 2.1rem;
     }
@@ -264,6 +266,7 @@
     &__user-generated {
       display: flex;
     }
+
     &__ingredients {
       font-size: 1.8rem;
       padding: 1rem 2rem;
