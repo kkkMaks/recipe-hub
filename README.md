@@ -10,7 +10,8 @@ This is a project for a recipe sharing website called "Recipe-Hub". The website 
 
 - ### User Stories
   - As a user, I want to be able to search for recipes by ingredient or category so that I can find recipes that I want to make.
-  - As a user, I want to be able to save recipes to my profile so that I can easily access them later.
+  - As a user, I want to be able to update the quantity of ingredients in a recipe so that I can adjust the recipe to my needs.
+  - As a user, I want to be able to bookmark recipes so that I can review them later.
   - As a user, I want to be able to upload my own recipes so that I can share them with the community.
   - As a user, I want the website to be easy to navigate and visually appealing
   - As a user, I want the website to be responsive so that I can access it on a range of devices.
@@ -22,10 +23,19 @@ This is a project for a recipe sharing website called "Recipe-Hub". The website 
 ## 3.Features
 
 - ### Existing Features
-  - Recipe browsing and search
-  - Recipe saving
-  - Recipe uploading
-  - Pagination for recipe search results
+  - Search for recipes
+    - Search functionality: input field to send request to API with searched keywords
+    - Display search results with pagination
+    - Display recipe with cooking time, servings, ingredients and instructions
+  - Update the number of servings
+    - Increase or decrease the number of servings and update the quantity of ingredients accordingly
+  - Bookmark recipes
+    - Save recipes to local storage
+    - Display saved recipes
+    - Remove saved recipes
+  - Upload recipes
+    - Upload recipes to the website
+    - Display uploaded recipes
 
 ## 4.Technologies Used
 
